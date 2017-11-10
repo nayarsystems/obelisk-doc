@@ -38,7 +38,7 @@ Commands have the following format:
 
 `command_code` and the number of arguments will depend on the type of command (later in this document the codes for each command and its arguments are explained).
 
-When a command is sent, a esponse or an error will be received.
+When a command is sent, a response or an error will be received.
 
 ### Responses
 
@@ -263,4 +263,4 @@ Here is a suggestion on how to implement RPC calls on the client side:
 
 ## Client in Go (gobbus)
 
-A client in Go is already implemented.
+A client in Go is implemented: [gobbus](https://github.com/nayarsystems/gobbus).
