@@ -1,0 +1,3 @@
+# GSR
+
+## Full configuracion example
