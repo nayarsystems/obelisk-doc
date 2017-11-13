@@ -10,7 +10,7 @@ The GSR runs an image based on [LEDE](https://lede-project.org/), a Linux operat
 
 The command `gsr` is a symlink to `obelisk`, both located on `/usr/bin`.
 
-The `obelisk-wrapper` script (located on `/usr/bin`) is responsible for launching `obelisk` automatically when the device boots with the `/etc/init.d/obelisk` script. This script provides `/etc/init.d/obelisk stop`, `/etc/init.d/obelisk start` and `/etc/init.d/obelisk restart` for managing obelisk.
+The `obelisk-wrapper` script (located on `/usr/bin`) is responsible for launching and restarting `obelisk` if it dies. It is automatically started when the device boots with the `/etc/init.d/obelisk` service. This service provides `/etc/init.d/obelisk stop`, `/etc/init.d/obelisk start` and `/etc/init.d/obelisk restart` commands for managing obelisk.
 
 The `obelisk-wrapper` script starts obelisk with the main `/etc/obelisk/obelisk.json` config file (where the changes to the config are saved) on top of a failsafe config file `/etc/obelisk/failsafe.json` that is never modified. This ensures that some modules are always enabled and a minimum functionality is preserved in case of disaster (for example when saving an empty config or when accidentally deleting the config file).
 
