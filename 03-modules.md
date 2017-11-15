@@ -94,7 +94,7 @@ Parameter | Description | Default Value
 Topic | Type | Description
 :--- | :--- | :---
 `instance_name`.recv | Byte Array | Subscribe to enable the reception of data frames from the serial bus.
-`instance_name`.cmd.write | Byte Array | Publish to send data frames to the serial bus. Any errors are printed in the logs.
+`instance_name`.cmd.write | Byte Array / String | Publish to send data frames to the serial bus. The number of written bytes is returned. An error is returned if the type passed in the publish is invalid.
 
 ___
 
