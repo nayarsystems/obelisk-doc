@@ -33,9 +33,9 @@ This module is in charge of configuring and managing a CAN network interface as 
 Parameter | Description | Default Value 
 :---  | :--- | :---
 **interface_name** | Name of the CAN network interface. | `"can0"`
-**bitrate** | Required field. Bitrate of the bus to which the interface is connected. | `-1`
+**bitrate** | Bitrate of the bus to which the interface is connected (the default value `-1` produces an error on the instance, so it must be configured). | `-1`
 **listen_only** | Activate listening mode in which messages can be received but not sent. It also does not intervene on the bus to make the ACK of the messages. | `true`
-**loopback** | Activate test mode in which outgoing traffic is redirected as input without going through the bus. | `false`
+**loopback** | Activate testing mode in which outgoing traffic is redirected as input without going through the bus. | `false`
 **restart_ms** | Time in milliseconds to restart the interface automatically in case of error. | `10`
 **tx_buffer_frame_num** | Size of the frame send buffer. | `128`
 
@@ -80,14 +80,14 @@ This module is in charge for configuring and managing the information through a 
 
 Parameter | Description | Default Value 
 :---  | :---   | :---  
-**tty** | TTY device route. | `"/dev/ttyUSB0"`
+**tty** | Serial TTY device route. | `"/dev/ttyUSB0"`
 **baudrate** | Serial baudrate. | `9600`
-**databits** | Data bits of the serial. | `8`
-**read_threshold_time** | Delay that is given to the serial to read blocks, instead of sending data byte to byte. | `0.05`
-**stopbits** | Stop serial bits. | `1`
+**databits** | Data bits of the serial (one of `8`, `7`, `6` or `5`). | `8`
+**read_threshold_time** | Delay between reads to the serial in seconds, instead of reading data byte to byte. (`0` means no delay). | `0.05`
+**stopbits** | Serial stop bits (one of `1` or `2`). | `1`
 **parity** | Serial parity (`0` for none, `1` for odd, `2` for even). | `0`
-**hwfc** | Hardware flowcontrol. | `false`
-**swfc** | Software flowcontrol. | `false`
+**hwfc** | Hardware flowcontrol enabled. | `false`
+**swfc** | Software flowcontrol enabled. | `false`
 
 ### Pubsub topics
 
@@ -193,7 +193,7 @@ ___
 
 ### Description
 
-This module implements SLIC hardware logic.
+This module handles a SLIC dahdi device. Sends the appropiate tones for each state, receives and publishes the DTMFs from the SLIC.
 
 ### Configuration example
 
@@ -221,13 +221,32 @@ This module implements SLIC hardware logic.
         },
         ... other instances ...
     }
+
+### Specific module parameters
+
+Parameter | Description | Default Value 
+:--- | :--- | :---
+**channel** | Number of the dahdi device in the bus. | `1`
+**frmsize** | Size of the frames in bytes. | `160`
+**lfr1** | LFR1 gain (in dBs). | `-8.0`
+**lfr2** | LFR2 gain (in dBs). | `-8.0`
+**dialtone** | Invite to dial tone (frequency/milliseconds, ...). | `"425"`
+**busytone** | Busy line tone (frequency/milliseconds, ...). | `"425/200,0/200"`
+**ringtone** | Ringing tone (frequency/milliseconds, ...). | `"425/1500,0/3000"`
+**congestiontone** | Busy network tone (frequency/milliseconds, ...). | `"425/200,0/200,425/200,0/200,425/200,0/600"`
+**dtmf_threshold** | DTMF detection threshold. | `-100`
+**dtmf_min_gain** | Minimum gain (in dBs) to detect a DTMF. | `-40.0`
+**dtmf_min_gap** | Minimum gap in milliseconds between a DTMF and the previous one to detect it. | `85`
+**dtmf_twist** | Gain of the high tone (in dBs). | `-1.0`
+**dtmf_rtwist** | Gain of the low tone (in dBs). | `-1.0`
+
 ___
 
 ## Audiogen
 
 ### Description
 
-This module is an auxiliary module serves to reproduce sound and publish it to other modules. You can read a sound file, generate a sequence of DTMFs or generate a tone.
+This module is an auxiliary that allows to reproduce sound and publish it to other modules. It supports reading a sound file, generating a sequence of DTMFs or generating a tone.
 
 ### Configuration example
 
@@ -249,7 +268,7 @@ ___
 
 ### Description
 
-This module has implemented all the logic of a gateway between the slic and the modem.
+This module implements the logic of a gateway between the SLIC and the modem. Allows to bypass the audio between them, to attend the call requests from the SLIC (and do redirections), to regenerate tones from the SLIC or the modem...
 
 ### Configuration example
 
@@ -294,13 +313,78 @@ This module has implemented all the logic of a gateway between the slic and the 
         ... other instances ...
     }
 
+### Specific module parameters
+
+Parameter | Description | Default Value 
+:--- | :--- | :---
+**audiogen_dev** | Instance name of the `audiogen` module to use to send the regenerated tones from the modem to the SLIC. | `"audiogen"`
+**slic_dev** | Instance name of the `slic` module to use. | `"slic"`
+**modem_dev** | Instance name of the `modem` module to use. | `"modem"`
+**slic_dev_gain** | Gain in dBs to apply to audio from SLIC. | `0`
+**modem_dev_gain** | Gain in dBs to apply to audio from modem. | `0`
+**wait_digit** | Maximum time (in seconds) to wait between digits presses of a phone from the SLIC. After it expires, the number is dialed and no more presses are expected. | `4.0`
+**switch_polarity** | Generates a polarity change when an outgoing call is answered. | `false`
+**tro<num>** | Translation patterns (checked in order from `num` 1 to 6) for origin number. The first pattern that matches wil be translating according to the trd`num` parameter. Examples (`"902*`, `"612345678"`, `*`). | `""`
+**trd<num>** | Translation destination corresponding to the pattern tro`num`. Redirect the number to the one specified (`"="` means no redirection will be done, `""` means the call won't be done). | `""`
+**modem_dtmf_regen** | Enable regeneration of the DTMFs from the modem. | `true`
+**on_time** | Duration of the DTMFs regenerated from the modem. | `-8.0`
+**off_time** | Duration of the silence after the DTMFs regenerated from the modem. | `0.0`
+**modem_pcm_q_len** | Size of the queue for the audio (PCM) received from the modem. | `2`
+**modem_dtmf_q_len** | Size of the queue for the DTMFs received from the modem. | `2`
+**slic_dtmf_regen** | Enable regeneration of the DTMFs from the SLIC. | `true`
+**modem_dtmf_q_len** | Size of the queue for the DTMFs received from the SLIC. | `2`
+**modem_data_dev** | Instance name of the `modem` module to use in only data mode. | `""`
+**listen_addr** | Address to listen for incoming connections for data calls in only data mode. | `"0.0.0.0"`
+**listen_port** | Port to listen for incoming connections for data calls in only data mode. | `2325`
+
+___
+
+## Telealarm
+
+### Description
+
+This module implements the logic of a lift telealarm.
+
+### Configuration example
+
+    }
+        ... other instances ...
+        "telealarm": {
+            "module": "telealarm",
+            "log_level": "none",
+            "autostart": false,
+            "respawn": true,
+            "max_respawn_delay": 60         
+        },
+        ... other instances ...
+    }
+
+### Specific module parameters
+
+Parameter | Description | Default Value 
+:--- | :--- | :---
+**audiogen** | Instance name of the `audiogen` module to send error messages from files (disabled if left empty). | `""`
+**audio_message_files** | A map containing paths for files with the voice messages. | `{}`
+**modem** | Instance name of the `modem` module to use. | `""`
+**audio<num>** | Instance name for each audio module (`num` from 0 to 3) corresponding to each cabin. | `""`
+**modem_gain** | Gain in dBs to apply to audio from modem. | `0`
+**audio_gain** | Gain in dBs to apply to audio from audio module. | `0`
+**test_call_interval** | Period in seconds to do the test call | `259200`
+**max_dial_attempts** | Number of retries to the list of numbers before failing. | `1`
+**emerg<num>** | Emergency numbers to call (`num` from 0 to 3). | `""`
+**sos<num>** | SOS numbers to call (`num` from 0 to 1). | `""`
+**test<num>** | Test numbers to call (`num` from 0 to 1). | `""`
+**ack_digits** | Confirmation DTMF digits for emergency calls (disabled if empty). | `""`
+**ack_timeout** | Time in seconds to wait for confirmation DTMFs before stopping the call. | `10`
+**ack_bypass** | Stablish audio communication while waiting the confirmation DTMFs. | `false`
+
 ___
 
 ## Modem 
 
 ### Description
 
-This module has implemented all the logic necessary to make use of a modem.
+This module manages a GSM modem (voice, SMS, coverage...).
 
 ### Configuration example
 
@@ -327,13 +411,32 @@ This module has implemented all the logic necessary to make use of a modem.
 	    },
         ... other instances ...
     }
+
+### Specific module parameters
+
+Parameter | Description | Default Value 
+:--- | :--- | :---
+**tty_cmd** | Path of the TTY device for AT commands. | `"/dev/ttyUSB0"`
+**tty_pcm** | Path of the TTY device for voice. | `""`
+**init_str** | Initial AT command to send to the modem. | `"ATE0V1"`
+**rx_frm_size** | Reception buffer size (in bytes). | `800`
+**tx_frm_size** | Transmission buffer size (in bytes). | `320`
+**dtmf_threshold** | DTMF detection threshold. | `-20`
+**dtmf_min_gain** | Minimum gain (in dBs) to detect a DTMF. | `-40.0`
+**dtmf_min_gap** | Minimum gap in milliseconds between a DTMF and the previous one to detect it. | `85`
+**dtmf_twist** | Gain of the high tone (in dBs). | `-1.0`
+**dtmf_rtwist** | Gain of the low tone (in dBs). | `8.0`
+**spk_vol** | Modem speaker gain (in dBs). | `7`
+**data_only** | Use the modem only for data calls. | `false`
+**regen_dtmf_duration_ms** | Duration in milliseconds of the regenerated tones sent with the modem. | `100`
+
 ___
 
 ## Leds
 
 ### Description
 
-This Module is responsible for controlling the LEDs of the device. In the configuration, a list of LEDs with its associated path is defined.
+This module allows to control the LEDs of the device. In the configuration, a list of LEDs with its associated path is defined, those LEDs will have an interface in the pubsub to control them.
 
 ### Configuration example
 
@@ -355,6 +458,12 @@ This Module is responsible for controlling the LEDs of the device. In the config
         ... other instances ...   
     }
 
+### Specific module parameters
+
+Parameter | Description | Default Value 
+:--- | :--- | :---
+**led_<name>** | Multiple configurations for multiple LEDs assigning a `name` for each one. The value is a string with de path of the led device to be controlled. | `""`
+**switch_off** | A comma-separated string list with the `name`s of the LEDs to be turned off when stopping the instance. | `2324`
 ___
 
 ## Exec
@@ -443,13 +552,20 @@ Response:
         ... other instances ...   
     }
 
+### Specific module parameters
+
+Parameter | Description | Default Value
+:--- | :--- | :---
+**timeout** | Maximum time by default to execute commands (can be modified when executing a command). | `180`
+**max_in_size** | Maximum number of bytes to write as command input. | `131072`
+**max_out_size** | Maximum number of bytes to read from command output. | `131072`
 ___
 
 ## Report
 
 ### Description
 
-This module collects the information (the current state of the system and checks of the modules), and sends it to our systems through HTTP calls.
+This module collects information (the current state of the system and of each instance). Once started it tries to send the report through a HTTP POST request until it succeeds. The report can be requested to the module through the pubsub too.
 
 ### Configuration example
 
@@ -468,6 +584,15 @@ This module collects the information (the current state of the system and checks
         },
         ... other instances ...   
     }
+
+### Specific module parameters
+
+Parameter | Description | Default Value
+:--- | :--- | :---
+**timeout** | Time in seconds to wait after starting the instance to start trying to send the report. This allows for the other instances to start. | `10`
+**iface** | Network interface to extract the MAC to include in the report. | `"eth0"`
+**posturl** | Address to send the POST with the report. | `"http://localhost:80"`
+**max_retry_timeout** | Maximum time in seconds to wait between tries to send the report (it increases linearly at a reason of 10 seconds until this maximum). | `3600`
 
 ___
 
@@ -510,13 +635,31 @@ If after a time determined by `panic_timeout` no ping has been achieved by any i
         ... other instances ...
     }
 
+### Specific module parameters
+
+Parameter | Description | Default Value
+:--- | :--- | :---
+**ifaces** | Comma-separated string list of interfaces to track. | `"eth0,eth1,wlan0,br-lan,ppp0"`
+**clean_untracked** | Prioritize the tracked interfaces to the others of the system (moving the others to higher metrics). | `false`
+**ping_list** | Comma-separated string list of hosts to ping. | `"8.8.8.8,8.8.4.4"`
+**off_period** | Interval in seconds to check the interfaces when no ping has succeeded. | `10.0`
+**on_period** | Interval in seconds to check the interfaces when a ping has succeeded. | `60.0`
+**ping_path** | Command to execute for the ping utility. | `"ping"`
+**ping_tout** | Timeout in seconds for the pings. | `4.0`
+**ip_path** | Command to execute for the ip utility. | `"ip"`
+**route_path** | Command to execute for the route utility. | `"route"`
+**awk_path** | Command to execute for the awk utility. | `"awk"`
+**head_path** | Command to execute for the head utility. | `"head"`
+**panic_tout** | Time in seconds without ping to execute the panic command. | `900`
+**panic_cmd** | Command to execute when the panic timeout expires (none if left empty). | `"reboot"`
+
 ___
 
 ## 3g
 
 ### Description
 
-This module is responsible for making the connection to the Internet through the 3G modem. Make the conversation with the modem to configure it, test APNs through the world list or allow it to be configured by hand; run the PPPD daemon with the correct configuration and check that there is internet ping for that interface. If you do not get internet after a certain time, a panic command is executed.
+This module is responsible for making the connection to the Internet through the 3G modem. Make the conversation with the modem to configure it, test APNs through the world list or allow it to be configured by hand; run the PPPD daemon with the correct configuration and check that there is internet access through 3G with the `wdinet` module. If you do not get internet after a certain time, a panic command is executed.
 
 ### Configuration example
 
@@ -547,13 +690,33 @@ This module is responsible for making the connection to the Internet through the
         ... other instances ...
     }
 
+### Specific module parameters
+
+Parameter | Description | Default Value
+:--- | :--- | :---
+**tty_path** | Path of the modem TTY device. | `"/dev/ttyUSB0"`
+**tty_hwc** | Enable TTY hardware flowcontrol. | `false`
+**timeout** | Timeout in seconds to wait for AT command responses. | `5.0`
+**modem_init** | Initial AT command to send to the modem. | `"ATE0V1"`
+**pppd_path** | Command to execute the pppd utility. | `"pppd"`
+**pppd_params** | Extra parameters to pass to pppd. | `"mtu 1450"`
+**pppd_wait_iface** | Time in seconds to wait for the interface to be ready after launching pppd. | `25`
+**unit** | Number of the desired interface to pass to pppd, used to name the interface (pppX). | `0`
+**metric** | Desired metric of the interface to pass to pppd (see `wdinet` module). | `30`
+**apn_file** | Path of the JSON file to use as list of APNs. | `"/etc/apns.json"`
+**force_apn** | Force the specified APN (if empty the file with the list of APNs is used). | `""`
+**force_apn_user** | User to use with the forced APN. | `""`
+**force_apn_pass** | Password to use with the forced APN. | `""`
+**panic_timeout** | Time in seconds without internet through 3G to execute the panic command. | `600`
+**panic_cmd** | Command to execute when the panic timeout expires (none if left empty). | `""`
+
 ___
 
 ## Sms 
 
 ### Description
 
-This module is responsible of acting as a bridge between the SMS received and the pubsub.
+This module acts as a bridge between the received SMSs (through a `modem` instance) and the pubsub.
 
 ### Configuration example
 
@@ -604,13 +767,23 @@ This module is responsible of acting as a bridge between the SMS received and th
         ... other instances ...
     }
 
+### Specific module parameters
+
+Parameter | Description | Default Value 
+:--- | :--- | :---
+**modem_dev** | Modem module instance name from which to receive SMSs. | `"modem"`
+**password** | Password the SMS must contain to be valid. | `"22sms22"`
+**respond** | Respond to all the SMSs (included those that don't requested a response). | `true`
+**report_parameters** | A map to specify the data to be returned by a SMS report. The keys correspond to a section (an instance name or `main`) in the report generated by the `report` module and the values correpond to the parameter of that section to be included in the report. | `{"main": "id", "console": "remote_conns"}`
+**$<param_alias>** | One alias for each parameter of the config to use with the SMSs, instead of writing the instance and the parameter, the alias can be used to save characters on the SMS. `config_param` | 
+
 ___
 
 ## Battery
 
 ### Description
 
-This module is responsible of periodically check the battery status, publishing the read values of the battery in the pubsub, and the alerts, depending on the logic defined for each variable.
+This module is responsible of periodically checking the battery status, publishing the read values of the battery in the pubsub and generating alerts depending on the threshold values defined for each variable. Works with a BQ34Z100 module.
 
 ### Configuration example
 
@@ -651,6 +824,25 @@ This module is responsible of periodically check the battery status, publishing 
         ... other instances ...
     }
 
+### Specific module parameters
+
+Parameter | Description | Default Value
+:--- | :--- | :---
+**i2cbus** | I2C device path. | `"/dev/i2c-0"`
+**reload_period** | Interval in seconds to read and publish battery data. | `60`
+**vars** | A list for each battery variable defining the thresholds and alert values. | `[]`
+
+#### vars parameters
+
+Parameter | Description
+:--- | :--- | :---
+**name** | Name of the variable (`"v"` for voltage, `"i"` for intensity, `"t"` for temperature and `"soc"` for state of charge).
+**thold** | Threshold to publish again the read data (from the last published value).
+**alert** | Wheter to activate the alerts for the variable (`true`) or not (`false`).
+**alert_level** | *(only for `v`)* Limit value to generate the alert state.
+**alert_safe** | *(only for `v`)* Limit value to generate the alert recovery state.
+**alert_max** | *(only for `t`)* Limit value to generate the alert state.
+
 ___
 
 ## Watchdog
@@ -677,13 +869,22 @@ This module is responsible for opening and maintaining the system watchdog accor
         ... other instances ...
     }
 
+### Specific module parameters
+
+Parameter | Description | Default Value 
+:--- | :--- | :---
+**path** | Path to watchdog device. | `"/dev/watchdog"`
+**interval** | Time in seconds to wait between writes to watchdog. | `1`
+**auto_open** | Open the watchdog automatically when starting the instance. | `true`
+**auto_close** | Close the watchdog automatically when stopping the instance. | `true`
+
 ___
 
 ## Vpn4m
 
 ### Description
 
-This module is responsible of running the net4machines VPN.
+This module is responsible of connecting to the net4machines VPN.
 
 ### Configuration example
 
@@ -707,13 +908,35 @@ This module is responsible of running the net4machines VPN.
         ... other instances ...
     }
 
+### Specific module parameters
+
+Parameter | Description | Default Value 
+:--- | :--- | :---
+**host** | Address of the VPN server to connect. | `"eu1.z.n4m.zone"`
+**port** | Port of the VPN server to connect. | `7744`
+**user** | User to authenticate. | `"user"`
+**password** | Password to authenticate. | `"password"`
+**if_name** | Name of the created interface. | `"n4m%d"`
+**fail_cmd_error** | Treat as an error the execution of commands with a return value different to zero. | `false`
+**restart_on_default_route** | Restart the instance when a change on the default route is found through the `wdinet` instance. | `true`
+**ip_cmd** | Command to execute the ip utility. | `"/usr/sbin/ip"`
+**iptables_cmd** | Command to execute the iptables utility. | `"/usr/sbin/iptables"`
+
+___
+
+## Nexus
+
+### Description
+
+This module opens a [nexus](https://github.com/jaracil/nexus) connection.
+
 ___
 
 ## Evdev
 
 ### Description
 
-This module is responsible of capturing the input events of an evdev device and publishes them by the obelisk pubsub.
+This module captures the input events of an evdev device and publishes them on the obelisk pubsub. This, for example, allows to react to button pushes.
 
 ### Configuration example
 
@@ -729,6 +952,12 @@ This module is responsible of capturing the input events of an evdev device and 
 	    },
         ... other instances ...
     }
+
+### Specific module parameters
+
+Parameter | Description | Default Value 
+:--- | :--- | :---
+**devpath** | Path to the device to be watched by the instance. | `"/dev/input/button"`
 
 ___
 
@@ -762,15 +991,26 @@ The timeout parameter is used when all the methods configured to notify the aler
         ... other instances ...
     }
 
+### Specific module parameters
+
+Parameter | Description | Default Value 
+:--- | :--- | :---
+**alert_path** | Path of the pubsub to subscribe for receiving alerts (`sys.alert.<alert_path>`). | `""`
+**sms_to** | Phone number to send the SMS to. Not send by SMS if empty. | `""`
+**modem_dev** | Instance name of the `modem` module to send the SMSs. | `"modem"`
+**url_post** | Address to send the alert through POST. Not sent by POST if empty. | `""`
+**timeout** | Time in seconds to wait between tries to send the alert. It increments exponentially. | `3600`
+**max_ttl** | Maximum life time in seconds for the alert, when this time expires and the alert has not been notified, it's deleted. | `86400`
+
 ___
 
 ## Button
 
 ### Description
 
-This module implements the logic of a button. The controlled key is identified by the type and by the code issued by the **mod_evdev**. If the monitored key is kept pressed for at least `keypress_min_secs` seconds and no more than `keypress_max_secs`, the list of actions defined in the "actions" tag is executed. 
+This module implements the logic of a button. The controlled key is identified by the type and by the code issued by the **mod_evdev**. If the monitored key is kept pressed for at least `keypress_min_secs` seconds and no more than `keypress_max_secs`, the list of actions defined in the `actions` parameter tag is executed. 
 
-This `actions` tag is an array of json objects, each with three keys: topic, type and payload. The topic identifies the topic that is published in the pubsub, the type defines the type of what is published, and the payload the data field that is published. With this list of `actions` we can make the button inject in the pubsub the configured commands.
+This `actions` parameter is an array of json objects, each with three keys: topic, type and payload. The topic identifies the topic that is published in the pubsub, the type defines the type of what is published, and the payload the data field that is published. With this list of `actions` we can make the button inject in the pubsub the configured commands.
 
 ### Configuration example
 
@@ -811,6 +1051,16 @@ This `actions` tag is an array of json objects, each with three keys: topic, typ
         ... other instances ...
     }
 
+### Specific module parameters
+
+Parameter | Description | Default Value 
+:--- | :--- | :---
+**type** | Type of event (/usr/include/linux/input-event-codes.h). | `255`
+**code** | Key code (/usr/include/linux/input-event-codes.h). | `255`
+**keypress_min_secs** | Minimum number of seconds with the button pressed to execute the actions. | `0`
+**keypress_min_secs** | Maximum number of seconds with the button pressed to execute the actions. | `60`
+**actions** | JSON string with a list of the actions as defined in the description. | `"[]"`
+
 ___
 
 ## Gsrleds
@@ -831,9 +1081,11 @@ This module is reponsible of subscribing to GSR events that require turning LEDs
             "max_respawn_delay": 60,
             "battery_led": "wan",
             "config_led": "lan",
-            "dial_led": "lan",
             "modem_green_led": "wlan",
             "modem_red_led": "usb",
+            "modem_dev": "modem",
+            "gateway_dev": "gateway",
+            "telealarm_dev": "telealarm"
 	    },
         ... other instances ...
     }
