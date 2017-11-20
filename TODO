@@ -5,4 +5,5 @@
 * Add `guardian` module
 * Add `nexus` module
 * Add `gsrleds` parameters
+* Add `max17048` module
 * Document all the missing pubsub paths from modules
