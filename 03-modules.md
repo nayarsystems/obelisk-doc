@@ -718,6 +718,24 @@ ___
 
 This module acts as a bridge between the received SMSs (through a `modem` instance) and the pubsub.
 
+The format of the SMS iss:
+
+    SMS = <password>,<command>,<command>...
+    S:(<param>|<$param_alias>):<value> = sys.cmd.cfg.set.param
+    value == "t" > true
+    value == "f" > false
+    S! > force to set the param although it doesn't exists or type differs
+    G:(<param>|<$param_alias>) = sys.cmd.cfg.get
+    MS:(<param>|<$param_alias>)
+    MS = Module Restart
+    MK = Module Stop 
+    MR = Module Restart
+    ML = Module Reload
+    I:<param> = Add <param> to response (??)
+    R = Respond
+    NR = No respond
+    W = Save cfg
+
 ### Configuration example
 
     {

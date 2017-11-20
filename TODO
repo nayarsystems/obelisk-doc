@@ -5,5 +5,4 @@
 * Add `guardian` module
 * Add `nexus` module
 * Add `gsrleds` parameters
-* Document SMS format on `sms` module
 * Document all the missing pubsub paths from modules
