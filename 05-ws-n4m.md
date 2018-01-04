@@ -8,7 +8,7 @@ This brings all the power the pubsub provides to the browser, allowing to develo
 
 Start a Websocket connection to:
 
-`wss://wsgw.n4m.zone:433/?to=<device_id>.v.n4m.zone:2324&method=n4m&user=<n4m_user>&pass=<n4m_pass>`
+`wss://wsgw.n4m.zone:443/?to=<device_id>.v.n4m.zone:2324&method=n4m&user=<n4m_user>&pass=<n4m_pass>`
 
 Where:
 
