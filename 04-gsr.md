@@ -4,7 +4,7 @@ The GSR device (GSM Smart Router) uses obelisk as its core. The following sectio
 
 ## Operating system
 
-The GSR runs an image based on [LEDE](https://lede-project.org/), a Linux operating system based on OpenWrt.
+The GSR runs an image based on [LEDE](https://lede-project.org/), a GNU/Linux operating system based on OpenWrt.
 
 ## Running obelisk
 
@@ -28,3 +28,15 @@ In failsafe mode, the failsafe config file is loaded and its defined instances s
 To read the syslog where obelisk logs all it's data, the `logread` command must be used.
 
 `logread -f -l 200` shows the last 200 lines and follows the output.
+
+## Custom scripts
+
+There is some free space for users to add their custom scripts wherever they want and interface with obelisk through a local connection to obbus.
+
+You can download the toolchain needed to compile software here: http://gsr-repo.n4m.zone/repo/external/toolchains/v3/Nayar-Toolchain-mips-24kc_gcc-6.3.0_musl-1.1.16.Linux-x86_64.tar.bz2
+
+We also provide a Lua 5.1 environment, but you will need to install socket and msgpack packages manually to be able to connect to obbus, since these are not installed by default to save some space.
+
+> Be aware that there is only ~3MiB of storage available to host your custom scripts and any data you may want to preserve
+
+You will also need to setup a startup script on `/etc/init.d/` to run your scripts on boot alongside obelisk
