@@ -33,7 +33,7 @@ To read the syslog where obelisk logs all it's data, the `logread` command must 
 
 There is some free space for users to add their custom scripts wherever they want and interface with obelisk through a local connection to obbus.
 
-You can download the toolchain needed to compile software here: http://gsr-repo.n4m.zone/repo/external/toolchains/v3/Nayar-Toolchain-mips-24kc_gcc-6.3.0_musl-1.1.16.Linux-x86_64.tar.bz2
+You can download the toolchain needed to compile software here: http://obelisk-repo.n4m.zone/repo/external/toolchains/v3/Nayar-Toolchain-mips-24kc_gcc-6.3.0_musl-1.1.16.Linux-x86_64.tar.bz2
 
 We also provide a Lua 5.1 environment, but you will need to install socket and msgpack packages manually to be able to connect to obbus, since these are not installed by default to save some space.
 
