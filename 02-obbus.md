@@ -264,3 +264,18 @@ Here is a suggestion on how to implement RPC calls on the client side:
 ## Client in Go (gobbus)
 
 A client in Go is implemented: [gobbus](https://github.com/nayarsystems/gobbus).
+
+## Simple Lua example
+
+Example of a publish command of the value `1234` to the topic `test.lua`
+
+```
+local mp = require("MessagePack")
+local socket = require("socket")
+local host, port = "127.0.0.1", 2324
+local tcp = assert(socket.tcp())
+
+tcp:connect(host, port);
+tcp:send(mp.pack { 4, "test.lua", 1234 } ) 
+tcp:close()
+```
