@@ -12,9 +12,9 @@ Start a Websocket connection to:
 
 Where:
 
-* **<device_id>** is the ID of the obelisk device to connect to.
-* **<n4m_user>** is an authorized user of N4M.
-* **<n4m_pass>** is the password for the user of N4M.
+* **`<device_id>`** is the ID of the obelisk device to connect to.
+* **`<n4m_user>`** is an authorized user of N4M.
+* **`<n4m_pass>`** is the password for the user of N4M.
 
 ## Using the connection
 
