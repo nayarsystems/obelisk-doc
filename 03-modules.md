@@ -634,7 +634,8 @@ If after a time determined by `panic_timeout` no ping has been achieved by any i
             "ping_list": "8.8.8.8,4.4.4.4",
             "ping_path": "ping",
             "ping_tout": 4,
-            "route_path": "route"
+            "route_path": "route",
+            "stats_period": 60
         },
         ... other instances ...
     }
@@ -656,7 +657,7 @@ Parameter | Description | Default Value
 **head_path** | Command to execute for the head utility. | `"head"`
 **panic_tout** | Time in seconds without ping to execute the panic command. | `900`
 **panic_cmd** | Command to execute when the panic timeout expires (none if left empty). | `"reboot"`
-
+**stats_period** | Interval in seconds to scrap interfaces statistics | `60`
 ___
 
 ## 3g
@@ -1180,4 +1181,4 @@ Parameter | Description | Default Value
 
 Topic | Type | Description 
 :---  | :--- | :---
-`instance_name`.cmd.flush | * | Send the aggregated events now, without waiting for the time or elemetns limit
+`instance_name`.cmd.flush | * | Send the aggregated events now, without waiting for the time or elements limit
