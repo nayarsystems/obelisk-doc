@@ -283,6 +283,8 @@ This module implements the logic of a gateway between the SLIC and the modem. Al
             "audiogen_dev":	"audiogen",
             "listen_addr": "0.0.0.0",
             "listen_port": 2325,
+            "obbus_addr": "127.0.0.1",
+            "obbus_port: 2324,
             "modem_data_dev": "modem",
             "modem_dev": "modem",
             "modem_dev_gain": 0,
@@ -336,6 +338,8 @@ Parameter | Description | Default Value
 **modem_data_dev** | Instance name of the `modem` module to use in only data mode. | `""`
 **listen_addr** | Address to listen for incoming connections for data calls in only data mode. | `"0.0.0.0"`
 **listen_port** | Port to listen for incoming connections for data calls in only data mode. | `2325`
+**obbus_addr** | Address of the obbus server to connect to | `"127.0.0.1"`
+**obbus_port** | Port of the obbus server to connect to | `2324`
 
 ___
 
@@ -1103,10 +1107,6 @@ This module is reponsible of subscribing to GSR events that require turning LEDs
             "modem_red_led": "usb",
             "modem_dev": "modem",
             "gateway_dev": "gateway",
-            "telealarm_dev": "telealarm"
-	    },
-        ... other instances ...
-    }       "gateway_dev": "gateway",
             "telealarm_dev": "telealarm"
 	    },
         ... other instances ...
