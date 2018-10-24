@@ -1106,4 +1106,63 @@ This module is reponsible of subscribing to GSR events that require turning LEDs
             "telealarm_dev": "telealarm"
 	    },
         ... other instances ...
+    }       "gateway_dev": "gateway",
+            "telealarm_dev": "telealarm"
+	    },
+        ... other instances ...
     }
+
+___
+
+## Events
+
+### Description
+
+This module is reponsible of aggregate pubsub messages on a path, and POST them to a server. 
+
+The posted events have the following format:
+    
+    POST /events/add - GSR
+    Content-Type: application/json, Content-Length: 153, Accept-Encoding: gzip
+    {  
+        "max17048.evt.v":{  
+            "info":"These are voltage values",
+            "timestamp":1540307066461, // Unix timestamp in milliseconds
+            "delta":[0,10040, 20133, 30179, 40219],
+            "values":[8.2675, 8.2675, 8.2675, 8.2675, 8.2675]
+        }
+    }
+
+### Configuration example
+
+    {
+        ... other instances ...
+        "events": {
+                "module": "events",
+                "topic": "test.*",
+                "parse_json": true,
+                "filter_json": "a,b,c,d",
+                "post_url": "http://localhost:8000/",
+                "send_max_elements": 10,
+                "send_period_s": 300
+        },
+        ... other instances ...
+    }
+
+### Specific module parameters
+
+Parameter | Description | Default Value 
+:--- | :--- | :---
+**topic** | Pubsub topic to subscribe to | `""`
+**parse_json** | Flag that the messages posted to the subscribed path are json encoded strings and we will want to parse them | `false`
+**filter_json** | If **parse_json** is true, extract only this comma-separated list of keys | `""`
+**post_url** | URL to POST the events to | `""`
+**info_str** | Static string that will be attached to the POSTed object  | `""`
+**send_max_elements** | Maximum number of aggregated elements before posting | `1024`
+**send_period_s** | Maximum seconds to wait before posting | `300`
+
+### Pubsub topics
+
+Topic | Type | Description 
+:---  | :--- | :---
+`instance_name`.cmd.flush | * | Send the aggregated events now, without waiting for the time or elemetns limit
