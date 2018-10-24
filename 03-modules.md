@@ -1120,7 +1120,7 @@ ___
 
 This module is reponsible of aggregate pubsub messages on a path, and POST them to a server. 
 
-The posted events have the following format:
+The posted events have the following format if `parse_json` is `false`
     
     POST /events/add - GSR
     Content-Type: application/json, Content-Length: 153, Accept-Encoding: gzip
@@ -1130,6 +1130,21 @@ The posted events have the following format:
             "timestamp":1540307066461, // Unix timestamp in milliseconds
             "delta":[0,10040, 20133, 30179, 40219],
             "values":[8.2675, 8.2675, 8.2675, 8.2675, 8.2675]
+        }
+    }
+
+Or this format if `parse_json` is `true`. (In this example, we publish `{"a": 123}` and `{"a": 123, "b": 0.123}` multiple times)
+
+    POST / - GSR
+    Content-Type: application/json, Content-Length: 127, Accept-Encoding: gzip
+    {
+        "test.asdf":{
+            "timestamp":1540305211538,
+            "delta":[0,0,187,187,395,395,586,586,803,803],
+            "series":{
+                "a":[123,123,123,123,123,123,123,123,123,123],
+                "b":[null,0.123,null,0.123,null,0.123,null,0.123,null,0.123]
+            }
         }
     }
 
