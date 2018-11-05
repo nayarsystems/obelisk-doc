@@ -3,6 +3,8 @@
 These demos work thanks to the [Net4Machines Websocket-TCP gateway](./05-ws-n4m.md) and a [GopherJS](https://github.com/gopherjs/gopherjs) wrapper of the 
 [Golang obbus client](https://github.com/nayarsystems/gobbus)
 
+> If you cant connect to the GSR, please check your adblock is not blocking the javascript nor the websocket connection to the gateway
+
 ## Serial 
 
 This demo will let you connect with the serial port of the GSR, read and write data to it. (The current serial port configuration will not be modified)
