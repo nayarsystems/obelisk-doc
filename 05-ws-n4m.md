@@ -1,6 +1,6 @@
 # N4M Websocket-TCP Gateway
 
-A websocket to TCP gateway for [Net4Machines](https://net4machines.com) is provided in order to access obbus on obelisk devices powered by N4M directly from the browser.
+The GSR exposes an obbus server on the TCP/2324 port, but we can't create TCP sockets from the browser so we need a websocket to TCP gateway, like the one [Net4Machines](https://net4machines.com) provides in order to access obbus on obelisk devices powered by N4M directly from the browser.
 
 This brings all the power the pubsub provides to the browser, allowing to develop real-time applications that interact with remote devices with all the needed security.
 
@@ -46,7 +46,7 @@ func main() {
     obbusConn = gobbus.NewObbus(conn)
 
     rchan := make(chan *gobbus.Message, 100)
-    err = obbusConn.Subscribe(rchan, "serial.recv)
+    err = obbusConn.Subscribe(rchan, "serial.recv")
     if err != nil {
         println("Error subscribing to serial recv events: " + err.Error())
         return

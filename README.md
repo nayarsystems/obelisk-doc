@@ -9,3 +9,4 @@ Documentation for obelisk
 3. [Modules](./03-modules.md)
 4. [GSR](./04-gsr.md)
 5. [Websocket-TCP N4M gateway](./05-ws-n4m.md)
+6. [Demos](./06-demos.md)
