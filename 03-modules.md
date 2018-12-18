@@ -1107,6 +1107,7 @@ This module is reponsible of subscribing to GSR events that require turning LEDs
 	    },
         ... other instances ...
     }
+
 ___
 
 ## Openwrt-cfg
