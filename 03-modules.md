@@ -1107,3 +1107,34 @@ This module is reponsible of subscribing to GSR events that require turning LEDs
 	    },
         ... other instances ...
     }
+___
+
+## Openwrt-cfg
+
+### Description
+
+This module is reponsible of handling configurations of the underlying openWRT operating system. Mostly handles networking configurations.
+
+### Configuration example
+
+    {
+        ... other instances ...
+        "openwrt-cfg": {
+            "module": "openwrt-cfg",
+            "autostart": true,
+            "log_level": "none",
+            "respawn": true,
+            "max_respawn_delay": 60,
+            "exec_instance": "exec",
+            "enable_wifi": true
+	},
+        ... other instances ...
+    }
+
+### Specific module parameters
+
+Parameter | Description | Default Value 
+:---  | :--- | :---
+**enable_wifi** | Enables or disables the first wifi AP station. | `true`
+
+___
