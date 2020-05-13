@@ -1136,53 +1136,53 @@ This module is reponsible of handling configurations of the underlying openWRT o
 
 Parameter | Description | Default Value 
 :---  | :--- | :---
-| **exec_instance**                             | Instancia del módulo exec a utilizar                                                           | `exec`           |
-| **dependent_modules**                         | Módulos necesarios a reiniciar al aplicar un cambio                                            | `3g`             |
-| **lan_protocol**                              | Protocolo a utilizar para el puerto LAN                                                        | `static`         |
-| **lan_phy_name**                              | Interfaz física a utilizar para el puerto LAN                                                  | `eth0`           |
-| **lan_ip**                                    | Dirección IPv4 para el puerto LAN                                                              | `192.168.255.1`  |
-| **lan_netmask**                               | Mascara IPv4 para el puerto LAN                                                                | `255.255.255.0`  |
-| **lan_gateway**                               | Puerta de enlace IPv4 para el puerto LAN                                                       | ``               |
-| **lan_broadcast**                             | Broadcast IPv4 para el puerto LAN                                                              | `192.168.255.255`|
-| **lan_custom_dns**                            | Utilizar servidor DNS proprio para el puerto LAN                                               | ``               |
-| **lan_enable_dhcp**                           | Habilitar servidor DHCP para el puerto LAN                                                     | `true`           |
-| **wan_protocol**                              | Protocolo a utilizar para el puerto WAN                                                        | `dhcp`           |
-| **wan_phy_name**                              | Interfaz física a utilizar para el puerto WAN                                                  | `eth1`           |
-| **wan_ip**                                    | Dirección IPv4 para el puerto WAN                                                              | `192.168.1.2`    |
-| **wan_netmask**                               | Mascara IPv4 para el puerto WAN                                                                | `255.255.255.0`  |
-| **wan_gateway**                               | Puerta de enlace IPv4 para el puerto WAN                                                       | `192.168.1.1`    |
-| **wan_broadcast**                             | Broadcast IPv4 para el puerto WAN                                                              | `192.168.1.255`  |
-| **wan_custom_dns**                            | Utilizar servidor DNS proprio para el puerto WAN                                               | ``               |
-| **enable_wifi**                               | Habilitar el wifi de la primera interfaz disponible                                            | `true`           |
-| **set_wan_as_lan**                            | Habilitar el puerto wan como lan                                                               | `false`          |
-| **set_priority_ppp_over_wan**                 | Priorizar la salida de datos por PPP en lugar de WAN                                           | `false`          |
-| **max_enable_time_wifi_offline_minutes**      | Tiempo máximo de funcionamiento del punto de acceso WiFi Offline                               | `240`            |
-| **periodic_check_time_wifi_offline_minutes**  | Tiempo entre comprobaciones si hay clientes conectados al WiFi Offline                         | `30`             |
-| **radio_rx_power**                            | Potencia de la radio de recepción dBm (-1 auto)                                                | `-1`             |
-| **radio_tx_power**                            | Potencia de la radio de transmisión (-1 auto)                                                  | `-1`             |
-| **radio_distance**                            | Distancia en metros del cliente más alejado (-1 auto)                                          | `-1`             |
-| **radio_channel**                             | Canal WiFi a utilizar                                                                          | `auto`           |
-| **radio_country_code**                        | Código de país de dos letras. Afecta los canales disponibles y las potencias de transmisión    | `ES`             |
-| **radio_hw_mode**                             | Protocolo WiFi a utilizar                                                                      | `11g`            |
-| **radio_ht_mode**                             | Anchura del canal                                                                              | `HT20`           |
-| **wifi_device**                               | Interfaz física WiFi a utilizar                                                                | `radio0`         |
-| **wifi_network**                              | Regla de firewall a aplicar                                                                    | `lan`            |
-| **wifi_mode**                                 | Modo de operación.                                                                             | `ap`             |
-| **wifi_ssid**                                 | Nombre de la red WifFi                                                                         | `GSR`            |
-| **wifi_hide_ssid**                            | Esconder el nombre de la red                                                                   | `false`          |
-| **wifi_encryption**                           | Tipo de cifrado                                                                                | `wpa2+ccmp`      |
-| **wifi_key**                                  | Contraseña de la red WiFi                                                                      | ``               |
-| **wifi_radius_server**                        | IP del servidor de autenticación RADIUS                                                        | `10.72.72.3`     |
-| **wifi_radius_port**                          | Puerto del servidor de autenticación RADIUS                                                    | `1812`           |
-| **wifi_radius_secret**                        | Secreto comprartido con el servidor de autenticación RADIUS                                    | `nayarsystems`   |
-| **wifi_offline_device**                       | Interfaz física WiFi a utilizar para la WiFi Offline                                           | `radio0`         |
-| **wifi_offline_network**                      | Regla de firewall a aplicar para la WiFi Offline                                               | `lanOffline`     |
-| **wifi_offline_mode**                         | Modo de operación.                                                                             | `ap`             |
-| **wifi_offline_ssid**                         | Nombre de la red WifFi para la WiFi Offline                                                    | ``               |
-| **wifi_offline_hide_ssid**                    | Esconder el nombre de la red para la WiFi Offline                                              | `false`          |
-| **wifi_offline_encryption**                   | Tipo de cifrado para la WiFi Offline                                                           | `psk-mixed`      |
-| **wifi_offline_disable**                      | Deshabilitar red WiFi para la WiFi Offline                                                     | `true`           |
-| **wifi_offline_key**                          | Contraseña de la red WiFi para la WiFi Offline                                                 | `12345678`       |
+**exec_instance**                             | Instancia del módulo exec a utilizar                                                           | `exec`           
+**dependent_modules**                         | Módulos necesarios a reiniciar al aplicar un cambio                                            | `3g`             
+**lan_protocol**                              | Protocolo a utilizar para el puerto LAN                                                        | `static`         
+**lan_phy_name**                              | Interfaz física a utilizar para el puerto LAN                                                  | `eth0`           
+**lan_ip**                                    | Dirección IPv4 para el puerto LAN                                                              | `192.168.255.1`  
+**lan_netmask**                               | Mascara IPv4 para el puerto LAN                                                                | `255.255.255.0`  
+**lan_gateway**                               | Puerta de enlace IPv4 para el puerto LAN                                                       | ``               
+**lan_broadcast**                             | Broadcast IPv4 para el puerto LAN                                                              | `192.168.255.255`
+**lan_custom_dns**                            | Utilizar servidor DNS proprio para el puerto LAN                                               | ``               
+**lan_enable_dhcp**                           | Habilitar servidor DHCP para el puerto LAN                                                     | `true`           
+**wan_protocol**                              | Protocolo a utilizar para el puerto WAN                                                        | `dhcp`           
+**wan_phy_name**                              | Interfaz física a utilizar para el puerto WAN                                                  | `eth1`           
+**wan_ip**                                    | Dirección IPv4 para el puerto WAN                                                              | `192.168.1.2`    
+**wan_netmask**                               | Mascara IPv4 para el puerto WAN                                                                | `255.255.255.0`  
+**wan_gateway**                               | Puerta de enlace IPv4 para el puerto WAN                                                       | `192.168.1.1`    
+**wan_broadcast**                             | Broadcast IPv4 para el puerto WAN                                                              | `192.168.1.255`  
+**wan_custom_dns**                            | Utilizar servidor DNS proprio para el puerto WAN                                               | ``               
+**enable_wifi**                               | Habilitar el wifi de la primera interfaz disponible                                            | `true`           
+**set_wan_as_lan**                            | Habilitar el puerto wan como lan                                                               | `false`          
+**set_priority_ppp_over_wan**                 | Priorizar la salida de datos por PPP en lugar de WAN                                           | `false`          
+**max_enable_time_wifi_offline_minutes**      | Tiempo máximo de funcionamiento del punto de acceso WiFi Offline                               | `240`            
+**periodic_check_time_wifi_offline_minutes**  | Tiempo entre comprobaciones si hay clientes conectados al WiFi Offline                         | `30`             
+**radio_rx_power**                            | Potencia de la radio de recepción dBm (-1 auto)                                                | `-1`             
+**radio_tx_power**                            | Potencia de la radio de transmisión (-1 auto)                                                  | `-1`             
+**radio_distance**                            | Distancia en metros del cliente más alejado (-1 auto)                                          | `-1`             
+**radio_channel**                             | Canal WiFi a utilizar                                                                          | `auto`           
+**radio_country_code**                        | Código de país de dos letras. Afecta los canales disponibles y las potencias de transmisión    | `ES`             
+**radio_hw_mode**                             | Protocolo WiFi a utilizar                                                                      | `11g`            
+**radio_ht_mode**                             | Anchura del canal                                                                              | `HT20`           
+**wifi_device**                               | Interfaz física WiFi a utilizar                                                                | `radio0`         
+**wifi_network**                              | Regla de firewall a aplicar                                                                    | `lan`            
+**wifi_mode**                                 | Modo de operación.                                                                             | `ap`             
+**wifi_ssid**                                 | Nombre de la red WifFi                                                                         | `GSR`            
+**wifi_hide_ssid**                            | Esconder el nombre de la red                                                                   | `false`          
+**wifi_encryption**                           | Tipo de cifrado                                                                                | `wpa2+ccmp`      
+**wifi_key**                                  | Contraseña de la red WiFi                                                                      | ``               
+**wifi_radius_server**                        | IP del servidor de autenticación RADIUS                                                        | `10.72.72.3`     
+**wifi_radius_port**                          | Puerto del servidor de autenticación RADIUS                                                    | `1812`           
+**wifi_radius_secret**                        | Secreto comprartido con el servidor de autenticación RADIUS                                    | `nayarsystems`   
+**wifi_offline_device**                       | Interfaz física WiFi a utilizar para la WiFi Offline                                           | `radio0`         
+**wifi_offline_network**                      | Regla de firewall a aplicar para la WiFi Offline                                               | `lanOffline`     
+**wifi_offline_mode**                         | Modo de operación.                                                                             | `ap`             
+**wifi_offline_ssid**                         | Nombre de la red WifFi para la WiFi Offline                                                    | ``               
+**wifi_offline_hide_ssid**                    | Esconder el nombre de la red para la WiFi Offline                                              | `false`          
+**wifi_offline_encryption**                   | Tipo de cifrado para la WiFi Offline                                                           | `psk-mixed`      
+**wifi_offline_disable**                      | Deshabilitar red WiFi para la WiFi Offline                                                     | `true`           
+**wifi_offline_key**                          | Contraseña de la red WiFi para la WiFi Offline                                                 | `12345678`       
 ___
 
 ## Modbus RTU
@@ -1211,10 +1211,10 @@ This module is reponsible of interpreting the serial modbus protocol from to GSR
 
 Parameter | Description | Default Value 
 :--- | :--- | :---
-| **serial_instance**        |   Serial instance to use for receiving raw data.             | `serial`  |
-| **slave_id**               |   ID of the modbus slave                                     | `1`       |
-| **max_reply_delay_ms**     |   Tymeout for receiving the data from the bus                | `1500`    |
-| **request_proc_queue_len** |   Internal queue for processing serial events from serial    | 128         |
+**serial_instance**        |   Serial instance to use for receiving raw data.             | `serial`
+**slave_id**               |   ID of the modbus slave                                     | `1`     
+**max_reply_delay_ms**     |   Tymeout for receiving the data from the bus                | `1500`  
+**request_proc_queue_len** |   Internal queue for processing serial events from serial    | 128       
 
 ### Pubsub topics examples
 
@@ -1278,16 +1278,16 @@ This module is reponsible of sending events from GSR to URL entrypoing. The data
 
 Parameter | Description | Default Value 
 :--- | :--- | :---
-| **parse_json**        | Specify if the data content is JSON serialized                                        | `false`|
-| **filter_json**       | Specify how the keys to search in the JSON, splited by `,`. Example `id,name,value`   | ``     |
-| **post_url**          | URL entypoint of the data to be processed                                             | ``     |
-| **send_max_elements** | Number of elements to store before sending the events.                                | `1024` |
-| **send_period_s**     | Time to wait before sending the events in seconds.                                    | `3600` |
-| **changes_only**      | Specify if required to store only different data values.                              | `false`|
-| **flush_paths**       | Obelisk paths in which forces to send the actual data stored                          | ``     |
-| **topic**             | Obelisk topic to subscribe and monitor it's values                                    | ``     |
-| **info_str**          | Extra data for the entrypoing.                                                        | ``     |
-| **notify_event_path** | Path to send a notification that an event was sent.                                   | ``     |
+**parse_json**        | Specify if the data content is JSON serialized                                        | `false`
+**filter_json**       | Specify how the keys to search in the JSON, splited by `,`. Example `id,name,value`   | ``     
+**post_url**          | URL entypoint of the data to be processed                                             | ``     
+**send_max_elements** | Number of elements to store before sending the events.                                | `1024` 
+**send_period_s**     | Time to wait before sending the events in seconds.                                    | `3600` 
+**changes_only**      | Specify if required to store only different data values.                              | `false`
+**flush_paths**       | Obelisk paths in which forces to send the actual data stored                          | ``     
+**topic**             | Obelisk topic to subscribe and monitor it's values                                    | ``     
+**info_str**          | Extra data for the entrypoing.                                                        | ``     
+**notify_event_path** | Path to send a notification that an event was sent.                                   | ``     
 
 ___
 
@@ -1317,8 +1317,8 @@ This module is reponsible for monitoring states of other modules.
 
 Parameter | Description | Default Value 
 :--- | :--- | :---
-| **instances_uptime_monitor**      |  Specify modules name to monitor splited by `,`. If an `@` is added at the end of the modules it will monitor all the modules wit the format `<instance_name>@<autogenerated_id>`| ``|
-| **instances_uptime_monitor_all**  |  Monitor all modules in the configuration file.   | `false`     |
+**instances_uptime_monitor**      |  Specify modules name to monitor splited by `,`. If an `@` is added at the end of the modules it will monitor all the modules wit the format `<instance_name>@<autogenerated_id>`| ``
+**instances_uptime_monitor_all**  |  Monitor all modules in the configuration file.   | `false`
 
 ### Pubsub topics examples
 
