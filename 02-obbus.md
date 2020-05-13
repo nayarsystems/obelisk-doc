@@ -189,9 +189,10 @@ The allowed message flags are:
 
 Flag | Description
 -- | --
-Instant | When it's set, the subscriber callback functions are called in the precise moment where the pubsub processes the message, so when the publish operation is completed all the callbacks code has been executed. Otherwise the message is queued, the publish operation is completed and then the callbacks are called when the main event loop is free (usually in a few milliseconds).
+~~Instant~~ `DEPRECATED`| When it's set, the subscriber callback functions are called in the precise moment where the pubsub processes the message, so when the publish operation is completed all the callbacks code has been executed. Otherwise the message is queued, the publish operation is completed and then the callbacks are called when the main event loop is free (usually in a few milliseconds).
 Non-recursive | When it's set only the subscribers on the full topic will receive the message (when publishing to `some_instance.interesting.topic` only the subscribers to `some_instance.interesting.topic` will receive it). Otherwise the subscribers to partial topics will receive the message too (the subscribers to `some_instance.interesting.*`, `some_instance.*` and `*`).
 Error | It signals the message as an error (useful for response messages to signal something went bad), the subscriber can check for this flag.
+Sticky | When it's set any subscriber will receive the last message that was sent in the topic. This is useful for knowing the last state of a given path. *__Important__*: If a message is sent as `sticky` type and the next message is sent as `non sticky`, the sticky message will be removed and new subscribers will not receive automatically the last state. 
 
 **command**: `[ 4, topic_or_index, value ]`
 
