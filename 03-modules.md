@@ -41,10 +41,12 @@ Parameter | Description | Default Value
 
 ### Pubsub topics
 
-Topic | Type | Description 
-:---  | :--- | :---
-`instance_name`.evt.frame | Byte Array | Subscribe to enable the reception of CAN frames from the CANBus.
+Topic | Type | Description | Flags
+:---  | :--- | :---| :---
+*evt* | | | 
+`instance_name`.evt.frame | Byte Array | Subscribe to enable the reception of CAN frames from the CANBus.|MSG_FL_INSTANT / MSG_FL_NONRECURSIVE
 `instance_name`.evt.error | Byte Array | Subscribe to enable the reception of CAN [error](https://github.com/torvalds/linux/blob/master/include/uapi/linux/can/error.h) frames from the CANBus.
+*cmd* | | |
 `instance_name`.cmd.frame | Byte Array | Publish to this topic to send a CAN frame to the CANBus. An `"ok"` string is returned (or a descriptive string error).
 
 ___
@@ -91,10 +93,28 @@ Parameter | Description | Default Value
 
 ### Pubsub topics
 
-Topic | Type | Description
-:--- | :--- | :---
+Topic | Type | Description | Flags
+:--- | :--- | :--- | :--
+*recv* | | |
 `instance_name`.recv | Byte Array | Subscribe to enable the reception of data frames from the serial bus.
+*evt* | |
+`instance_name`.evt.recv | Byte Array | Subscribe to enable the reception of data frames from the serial bus. | MSG_FL_INSTANT / MSG_FL_NONRECURSIVE
+`instance_name`.evt.rts | Integer | Publish to set rts.
+`instance_name`.evt.cts | Integer | Publish to set cts.
+`instance_name`.evt.dtr | Integer | Publish to set dtr.
+`instance_name`.evt.dsr | Integer | Publish to set dsr.
+`instance_name`.evt.dcd | Integer | Publish to set dcd.
+`instance_name`.evt.ri | Integer | Publish to set ri.
+*cmd* | |
 `instance_name`.cmd.write | Byte Array / String | Publish to send data frames to the serial bus. The number of written bytes is returned. An error is returned if the type passed in the publish is invalid.
+`instance_name`.cmd.setbaudrate | Integer | Publish to set baudarate.
+`instance_name`.cmd.setparity | Integer | Publish to set parity.
+`instance_name`.cmd.getrts | Integer | Publish to get rts.
+`instance_name`.cmd.getcts | Integer | Publish to get cts.
+`instance_name`.cmd.getdtr | Integer | Publish to get dtr.
+`instance_name`.cmd.getdsr | Integer | Publish to get dsr.
+`instance_name`.cmd.getdcd | Integer | Publish to get dcd.
+`instance_name`.cmd.getri  | Integer | Publish to get ri.
 
 ___
 
@@ -113,7 +133,7 @@ pi:`topic`:`value` | Integer |  Publish a integer message to `topic`.
 pf:`topic`:`value` | Float   |  Publish a float message to `topic`.
 s:`topic`  | (ignored)   |  Subscribe to the messages of `topic`.
 u:`topic`  | (ignored)   |  Unsubscribe from the messages of `topic`.
-ua | (ignored)   | Unsubscribe from the messages of all the `topic`s.
+ua | (ignored)   | Unsubscribe from the messages of all the `topic`.
 
 ### Configuration example
 
@@ -145,6 +165,14 @@ Parameter | Description | Default Value
 **timeout** | Seconds of inactivity before closing the remote connection to prevent it from being permanently open. It does not affect the local connection. A negative value disables this functionality. | `600`
 **blacklist** | Regular expression to deny IP addresses of incoming connections. | `"^$"`
 **whitelist** | Regular expression to accept IP addresses of incoming connections. | `"127.0.0.1"`
+
+### Pubsub topics
+
+Topic | Type | Description 
+:--- | :--- | :--- 
+`topic` | String/Integer/Double/Bool | The topic is received and depending on the first element, one action or another is performed. ps -> Post a string, pi-> Post an integer, pf -> Post a float, s-> subscribe to a topic, u-> unsubscribe, ua-> unsubscribe from all topics. `Ex:  s:max17048.*, pi:pdahl.cmd.send:2, ps:modem.evt.sms:{"from":"654321234", "body":"12345,C:rp"} `
+*sys* | | |
+sys.cmd.exit | String | Publish cmd exit
 
 ___
 
@@ -240,6 +268,30 @@ Parameter | Description | Default Value
 **dtmf_twist** | Gain of the high tone (in dBs). | `-1.0`
 **dtmf_rtwist** | Gain of the low tone (in dBs). | `-1.0`
 
+### Pubsub topics
+
+Topic | Type | Description | Flags
+:---  | :--- | :--- | :--
+*evt* | | |
+`instance_name`.evt.onhook | Integer | Publish to set value to ringer and post to cmd.ringer.
+`instance_name`.evt.pcm | Integer | Publish to  value to generate dtfm_rx. | MSG_FL_INSTANT / MSG_FL_NONRECURSIVE
+`instance_name`.evt.pulsestart | String | Publish to activate the ev_slic_pulsestart of the gw state machine. 
+`instance_name`.evt.pulsestop | Integer | Publish to disable  the ev_slic_pulsestart of the gw state machine.
+`instance_name`.evt.needpcm | Integer | Publish to size buffer pcm. | MSG_FL_INSTANT / MSG_FL_NONRECURSIVE
+`instance_name`.evt.dtmf | String | Publish to dtmf.
+`instance_name`.evt.dtmf_discard | String |  Publish to dtmf discard.
+`instance_name`.evt.dtmf_end | String |  Publish to end of dtmf
+`instance_name`.evt.pcm_echocan | Buffer |  Publish to buffer | MSG_FL_INSTANT / MSG_FL_NONRECURSIVE
+
+*cmd* | |
+`instance_name`.cmd.pcmsend | Byte Array / String | Publish to buffer to the CAN.
+`instance_name`.cmd.playtone | String | The selected tone is played. Options: *dial, busy, ring, congestion, none*.
+`instance_name`.cmd.echobuf | Integer | The value is stored in *ctx->echobuf*.
+`instance_name`.cmd.echoflags | Integer | The value is stored in *ctx->echoflags* and modification to flags.
+`instance_name`.cmd.polarity | Integer | Publish set polarity
+`instance_name`.cmd.dtmfsend | String | Publish to Json with information of *type, digits, on_time, off_time, level, twist* and publish in *cmd.play*
+`instance_name`.cmd.ringer | String | Publish set ctx->ringer and activate o disable
+`instance_name`.cmd.play | String | Publish to Json with information of *type, digits, on_time, off_time, level, twist*.
 ___
 
 ## Audiogen
@@ -263,7 +315,21 @@ This module is an auxiliary that allows to reproduce sound and publish it to oth
     }
 
 ___
+### Pubsub topics
 
+Topic | Type | Description | Flags
+:---  | :--- | :---
+*evt* | |
+`instance_name`.evt.started.`topic` | Integer | Publish activate to topic
+`instance_name`.evt.stopped.`topic` | Integer | Publish disable to topic
+`instance_name`.evt.needpcm | Integer | Publish verify the configuration and send a publication of evt.started
+*cmd* | |
+`instance_name`.cmd.stop.`topic` |  | Publish close audiogen
+`instance_name`.cmd.play.* | | Publish activate audiogen and post *cmd.isplaying*
+`instance_name`.cmd.isplaying.`topic` | String | Pubblish to topic and return 1.
+
+
+___
 ## Gateway
 
 ### Description
@@ -338,7 +404,52 @@ Parameter | Description | Default Value
 **listen_port** | Port to listen for incoming connections for data calls in only data mode. | `2325`
 
 ___
+### Pubsub topics
 
+Topic | Type | Description | Flags 
+:---  | :--- | :--- | :---
+*evt* | | |
+`instance_name`.evt.timeout | Integer | Depending on the TYPE the state machine is modified.
+`instance_name`.evt.deactivate_timeout | Integer | Depending on the TYPE the state machine is modified.
+`instance_name`.evt.modem_dtmf_timeout | Integer | Depending on the TYPE the state machine is modified.
+`instance_name`.evt.slic_dtmf_timeout | Integer | Depending on the TYPE the state machine is modified.
+`instance_name`.evt.dial_result | Integer | Depending on the TYPE the state machine is modified.
+`instance_name`.evt.stat | Integer | Depending on the TYPE the state machine is modified.
+`instance_name_dialer`.evt.bstat | Integer | Depending on the TYPE the state machine is modified.
+`instance_name_dialer_data`.evt.bstat | Integer | Depending on the TYPE the state machine is modified.
+`instance_name_dialer`.evt.pcm | Integer | Publish activate to topic
+`instance_name_dialer`.evt.dtfm | Integer |Depending on the TYPE the state machine is modified.
+`instance_name_dialer`.evt.dtfm_end | Integer | Depending on the TYPE the state machine is modified.
+`instance_name`.evt.slic_dtmfsent | Integer | 
+`instance_name_tas`.evt.end | Integer | Depending on the TYPE the state machine is modified.
+`instance_name`.evt.set_tas_params_result | Integer | Depending on the TYPE the state machine is modified.
+`instance_name_slic`.evt.onhook | Integer | Depending on the TYPE the state machine is modified.
+`instance_name_slic`.evt.pulsestart | Integer | Depending on the TYPE the state machine is modified.
+`instance_name_slic`.evt.pulse | Integer | Depending on the TYPE the state machine is modified.
+`instance_name_slic`.evt.pulsestop | Integer | Depending on the TYPE the state machine is modified.
+`instance_name_slic`.evt.ready | Integer | Depending on the TYPE the state machine is modified.
+`instance_name_slic`.evt.dtfm | Integer | Depending on the TYPE the state machine is modified.
+`instance_name_slic`.evt.dtfm_end | Integer | Depending on the TYPE the state machine is modified.
+`instance_name`.evt.modem_dtmfsent | Integer | Depending on the TYPE the state machine is modified.
+`instance_name_slic`.evt.pcm | Integer | Publish activate to topic
+*cmd* | | |
+`instance_name`.cmd.deactivate | Integer | Publish disactivate to gateway
+`instance_name`.cmd.activate | Integer | Publish activate to gateway
+`instance_name`.cmd.set_state | String | Publish set to state (*online, ringing, dialout, busy, congestion, idle*)
+`instance_name_dialer_data`.cmd.datasend | Byte Array / String | Publish sends the contents of the buffer.
+**`instance_name_slic`.cmd.playtone | String | Publish sends to tone is played. Options: *dial, busy, ring, congestion, none*.
+**`instance_name_slic`.cmd.ringer | Integer | Publish activate to topic
+`instance_name_dialer_data`.cmd.hangup | Integer |Publish send 1 to hang up. 
+`instance_name_dialer`.cmd.hangup | Integer | Publish send 1 to hang up.
+`instance_name_dialer`.cmd.answer | Integer | The answer is sent to the dialer and it is sent to the corresponding module.
+**`instance_name_slic`.cmd.polarity | Integer | Publish set polarity
+`instance_name_tas`.cmd.set_params | String | Publish the parameters of the tas
+`instance_name_dialer`.cmd.dtmfsend | String | Publish send to dtmf.
+`instance_name_slic`.cmd.dtfmsend | String | Publish send to dtmf.
+`instance_name_dialer`.cmd.pcmsend | Buffer | Publish send to buffer.| MSG_FL_INSTANT/ MSG_FL_NONRECURSIVE
+
+
+___
 ## Telealarm
 
 ### Description
@@ -377,6 +488,40 @@ Parameter | Description | Default Value
 **ack_digits** | Confirmation DTMF digits for emergency calls (disabled if empty). | `""`
 **ack_timeout** | Time in seconds to wait for confirmation DTMFs before stopping the call. | `10`
 **ack_bypass** | Stablish audio communication while waiting the confirmation DTMFs. | `false`
+
+### Pubsub topics
+
+Topic | Type | Description | Flags
+:---  | :--- | :--- | :---
+*evt* | | | 
+`instance_name`.evt.timeout | Integer | The event is changed to timeout "3".
+`instance_name`.evt.stat | Integer | The event is changed to stat "2".
+`instance_name`.evt.dial_result | Integer | It checks if there is an error, if there is, the status is changed to dial error.
+`instance_name`.evt.dtmfsent | Integer | It checks if there is not an error, if there is, the status is changed to dtmf send.
+`instance_name_modem`.evt.pcm | Buffer | The buff is sent to the corresponding cabin audio module.
+`instance_name_modem`.evt.bstat | Integer | The event is changed to Modem bstat "1". 
+`instance_name_modem`.evt.dtmf | String | The event is changed to Modem dtmf "7".
+`instance_name_modem`.evt.ring | Integer | The event is changed to Modem ring "8".
+`instance_name_slic`.evt.dtmf | Integer | The event is changed to Modem dtmf "7".
+`instance_name_slic`.evt.pcm | Integer | The buff is sent to the corresponding cabin audio module.
+`instance_name_slic`.evt.onhook | Integer | The event is changed if value is 1 on hook or if value is 0 off hook.
+`instance_name_audio`.evt.pcm | Integer | Depending on the state the publication cmd.pcm is sent to modem or slic
+`instance_name_audio`.evt.alarmbtn | Integer | Depending on the value received, one event or another will be activated. (0 emergency, 1 sos, 2 cancel).
+`instance_name_audio`.evt.mod.stat | Integer | If the module is not in start it will go into respawn.
+`instance_name_audio`.evt.battery.stat | Integer | Publish to set battery_stat to the corresponding cabin audio module.
+`instance_name_audiogen`.evt.started.`instance_name` | Integer | The event is changed to Audiogen started audio "15".
+`instance_name_audiogen`.evt.stopped.`instance_name` | Integer | The event is changed to Audiogen stopped audio "16".
+`instance_name_audiogen`.evt.started.`instance_name_modem` | Integer | The event is changed to Audiogen started modem "17".
+`instance_name_audiogen`.evt.stopped.`instance_name_modem` | Integer | The event is changed to Audiogen stopped modem "18".
+*cmd* | | | 
+`instance_name`.cmd.mute_am | Integer | Publication if the value is 1 the calls are muted, if the value 0 they are unmuted.
+`instance_name`.cmd.test | Integer | Publication makes a test call.
+`instance_name_modem`.cmd.pcmsend | Buffer | Publish send to buffer. |  MSG_FL_INSTANT / MSG_FL_NONRECURSIVE
+`instance_name_slic`.cmd.pcmsend | Buffer | Publish send to buffer. |  MSG_FL_INSTANT / MSG_FL_NONRECURSIVE
+`audio[car_number - 1]`.cmd.pcmsend | Buffer | Publish send to buffer. |  MSG_FL_INSTANT / MSG_FL_NONRECURSIVE
+*sys* | |
+`sys.alarm.end_of_alarm.*`| Integer | The alert of the selected cabin is disabled by means of the value 
+`emergency_rtopic`| String | If the error flag is activated, the received message is stored as a state
 
 ___
 
@@ -430,7 +575,37 @@ Parameter | Description | Default Value
 **data_only** | Use the modem only for data calls. | `false`
 **regen_dtmf_duration_ms** | Duration in milliseconds of the regenerated tones sent with the modem. | `100`
 
-___
+### Pubsub topics
+
+Topic | Type | Description | Flags
+:---  | :--- | :---
+*evt* | |
+`instance_name`.evt.timeout | Integer| Activate to ev_timeout
+`instance_name`.evt.clcc_timeout | Integer | Activate to ev_clcc_timeout
+`instance_name`.evt.stat | Integer | Activate to ev_stat
+`instance_name`.evt.atrecv | | Activate to ev_modem_str
+`instance_name`.evt.sms.part | String | Post to diferents sms 
+`instance_name`.evt.pcm | String | Manage if there are different sms and send them ??| MSG_FL_INSTANT / MSG_FL_NONRECURSIVE
+`instance_name`.evt.needpcm | int | Publish send to size buffer | MSG_FL_INSTANT / MSG_FL_NONRECURSIVE
+`instance_name`.evt.stopped.`instance_name` | | Send ok to rtopic
+*cmd* | |
+`instance_name`.cmd.atsend | String | Post command AT
+`instance_name`.cmd.atsendraw | String | Post command AT
+`instance_name`.cmd.datasend | Buffer | Post buffer
+`instance_name`.cmd.hangup | String | Activate to ev_hangub
+`instance_name`.cmd.answer | String | Activate to ev_answer
+`instance_name`.cmd.qbstat | | Post to stat modem
+`instance_name`.cmd.dial | String | Call the number indicated by parameter.
+`instance_name`.cmd.call_blacklist_add |String |Number is added to a blacklist
+`instance_name`.cmd.call_blacklist_del |String |Number is deleted from a blacklist
+`instance_name`.cmd.agc_print | | If agc is enabled it will print the agc information
+`instance_name`.cmd.pcmsend | Buffer | Post to buffer
+`instance_name`.cmd.sms | String | Post to SMS
+`instance_name`.cmd.divert |String | Publish forward calls from a number, a json is passed with three parameters phone, period and oneshot.
+`instance_name`.cmd.force_pub_state | | Force to publish the csq and the creg.
+`instance_name`.cmd.dtmfsend | String | Publishes the sent dtfm, through a configuration json that is obtained from the config
+*sys* | |
+`sys.phone.cmd.divert` | String | Publish forward calls from a number, a json is passed with three parameters phone, period and oneshot.
 
 ## Leds
 
@@ -464,7 +639,18 @@ Parameter | Description | Default Value
 :--- | :--- | :---
 **led_`name`** | Multiple configurations for multiple LEDs assigning a `name` for each one. The value is a string with de path of the led device to be controlled. | `""`
 **switch_off** | A comma-separated string list with the `name`s of the LEDs to be turned off when stopping the instance. | `"lan,wan,wlan,usb"`
+
+
+### Pubsub topics
+
+Topic | Type | Description 
+:---  | :--- | :---
+*cmd* | |
+`instance_name`.cmd.brightness.* | String | Turn the led on or off
+`instance_name`.cmd.trigger.* | String | Turn on or off the led with higher configuration
+
 ___
+
 
 ## Exec
 
@@ -559,6 +745,16 @@ Parameter | Description | Default Value
 **timeout** | Maximum time by default to execute commands (can be modified when executing a command). | `180`
 **max_in_size** | Maximum number of bytes to write as command input. | `131072`
 **max_out_size** | Maximum number of bytes to read from command output. | `131072`
+
+### Pubsub topics
+
+Topic | Type | Description 
+:---  | :--- | :---
+*evt* | |
+`instance_name`.evt.stop_cmds |  | The process that was running is killed
+*cmd* | |
+`instance_name`.cmd | String | Executes the json that has been passed as a parameter and returns the result
+
 ___
 
 ## Report
@@ -593,7 +789,12 @@ Parameter | Description | Default Value
 **iface** | Network interface to extract the MAC to include in the report. | `"eth0"`
 **posturl** | Address to send the POST with the report. | `"http://localhost:80"`
 **max_retry_timeout** | Maximum time in seconds to wait between tries to send the report (it increases linearly at a reason of 10 seconds until this maximum). | `3600`
+### Pubsub topics
 
+Topic | Type | Description 
+:---  | :--- | :---
+*cmd* | |
+`instance_name`.cmd.generate | String | Send a report of all system modules.
 ___
 
 ## Wdinet
@@ -652,6 +853,21 @@ Parameter | Description | Default Value
 **head_path** | Command to execute for the head utility. | `"head"`
 **panic_tout** | Time in seconds without ping to execute the panic command. | `900`
 **panic_cmd** | Command to execute when the panic timeout expires (none if left empty). | `"reboot"`
+### Pubsub topics
+
+Topic | Type | Description 
+:---  | :--- | :---
+*evt* | |
+`instance_name`.evt.ping_done | String | Wdinet received a response from a ping execution
+`instance_name`.evt.get_route_done | String | get the route
+`instance_name`.evt.set_route_done | String | set the route
+`instance_name`.evt.stat | String | Exec module has changed state
+`instance_name`.evt.timeout | String | Ping response timed out
+`instance_name_exec`.evt.mod.stat | String | Exec module has changed state
+`instance_name_n4m`.evt.secure | Integer | safe_n4m mode is activated
+*cmd* | |
+`instance_name`.cmd.check_now | String | Connectivity is verified.
+
 
 ___
 
@@ -709,6 +925,19 @@ Parameter | Description | Default Value
 **force_apn_pass** | Password to use with the forced APN. | `""`
 **panic_timeout** | Time in seconds without internet through 3G to execute the panic command. | `600`
 **panic_cmd** | Command to execute when the panic timeout expires (none if left empty). | `""`
+
+### Pubsub topics
+
+Topic | Type | Description 
+:---  | :--- | :---
+*evt* | |
+`instance_name`.evt.stat | Integer | changed stat
+`instance_name`.evt.recv | String | Received AT command
+`instance_name`.evt.pppd_recv | String | Received pppd log line (change state when connected)
+`instance_name`.evt.timeout | Integer |  active timeout
+`instance_name`.evt.exec_response | String | change  state to M3G_ST_RUNNING_WAIT_IFACE 
+`instance_name_wdinet`.evt.mod.stat | Integer | Wdinet module has changed state
+`instance_name_modem`.evt.bstat | Integer | Modem module has changed state
 
 ___
 
@@ -795,9 +1024,23 @@ Parameter | Description | Default Value
 **report_parameters** | A map to specify the data to be returned by a SMS report. The keys correspond to a section (an instance name or `main`) in the report generated by the `report` module and the values correpond to the parameter of that section to be included in the report. | `{"main": "id", "console": "remote_conns"}`
 **$`param_alias`** | One alias for each parameter of the config to use with the SMSs, instead of writing the instance and the parameter, the alias can be used to save characters on the SMS. | 
 
+### Pubsub topics
+
+Topic | Type | Description 
+:---  | :--- | :---
+*evt* | |
+`instance_name_mode`.evt.sms | String | Send sms
+`instance_name`.got_state | String | Changed last_state_query
+*sys* | |
+sys.alert.`instance_name` | String | Send the Json of the sms
+sys.cmd.cfg.set.`instance_name` | String | Send new config
+sys.cmd.cfg.get.`instance_name` | String | Get config
+sys.cmd.cfg.save | String | Save config
+sys.alarm.end_of_alarm.sms.`instance_name` | Integer | remove cabin alarm
+
 ___
 
-## Battery
+## Battery  (Deprecated)
 
 ### Description
 
@@ -860,6 +1103,84 @@ Parameter | Description
 **alert_level** | *(only for `v`)* Limit value to generate the alert state.
 **alert_safe** | *(only for `v`)* Limit value to generate the alert recovery state.
 **alert_max** | *(only for `t`)* Limit value to generate the alert state.
+### Pubsub topics
+
+Topic | Type | Description | Flags
+:---  | :--- | :--- | :---
+*evt* | |
+`instance_name`.evt.`v_name`| Double | Publish v value
+`instance_name`.evt.`i_name`| Double | Publish i value
+`instance_name`.evt.`t_name`| Double | Publish t value
+`instance_name`.evt.`soc_name`| Double | Publish soc value
+*cmd* | |
+`instance_name`.cmd.query.`*` | String | Publish the value of the parameter received in the path.
+`instance_name`.cmd.resend | String | publish the value of (v ,i ,t, soc)
+`instance_name`.cmd.resend | String | values are changed to 0 and public (v ,i ,t, soc)
+*sys* | |
+sys.alert.`instance_name` | String | Publish alert json
+
+___
+## Max17048  
+
+### Description
+
+This module is responsible of periodically checking the battery status, publishing the read values of the battery in the pubsub and generating alerts depending on the threshold values defined for each variable. Works with a BQ34Z100 module.
+
+### Configuration example
+
+    {
+    ... other instances ...
+            "max17048": {
+        "autostart": true,
+        "cell_num": 2,
+        "i2cbus": "/dev/i2c-0",
+        "log_level": "none",
+        "max_respawn_delay": 60,
+        "module": "max17048",
+        "overvolt_alert": 8.5,
+        "overvolt_safe": 8.3,
+        "rcomp": 151,
+        "reset_mV": 3000,
+        "respawn": true,
+        "soc_alert": 50,
+        "soc_safe": 60,
+        "undervolt_alert": 7,
+        "undervolt_safe": 7.2
+    }, 
+    ... other instances ...
+    }
+
+### Specific module parameters
+
+Parameter | Description | Default Value
+:--- | :--- | :---
+**i2cbus** | I2C device path. | `"/dev/i2c-0"`
+
+
+#### parameters
+
+Parameter | Description
+:--- | :---
+**name** | Name of the variable (`"v"` for voltage, `"i"` for intensity, `"t"` for temperature and `"soc"` for state of charge).
+**thold** | Threshold to publish again the read data (from the last published value).
+**alert** | Wheter to activate the alerts for the variable (`true`) or not (`false`).
+**alert_level** | *(only for `v`)* Limit value to generate the alert state.
+**alert_safe** | *(only for `v`)* Limit value to generate the alert recovery state.
+**alert_max** | *(only for `t`)* Limit value to generate the alert state.
+
+### Pubsub topics
+
+Topic | Type | Description 
+:---  | :--- | :---
+*evt* | |
+`instance_name`.evt.soc | String | Process and send battery alerts.
+`instance_name_adc`.evt.voltage | Integer | Set value to adc. if greater than 16 true otherwise false.
+`instance_name`.evt.minutes | Double | Publish the remaining battery time.
+*cmd* | |
+`instance_name`.cmd.query | String | publish the values vcell, soc and If the battery is not charging, publish the remaining battery time.
+`instance_name`.cmd.rcomp | Integer | Set value to rcomp.
+*sys* ||
+sys.alert.`instance_name.soc`| String | 
 
 ___
 
@@ -895,6 +1216,17 @@ Parameter | Description | Default Value
 **interval** | Time in seconds to wait between writes to watchdog. | `1`
 **auto_open** | Open the watchdog automatically when starting the instance. | `true`
 **auto_close** | Close the watchdog automatically when stopping the instance. | `true`
+
+### Pubsub topics
+
+Topic | Type | Description 
+:---  | :--- | :---
+*cmd* | |
+`instance_name`.cmd.open | String | Open watchdog with current options
+`instance_name`.cmd.close | Integer | Close watchdog
+`instance_name`.cmd.timeout.get | Integer | Get timeout to options
+`instance_name`.cmd.timeout.set | Integer | Set timeout
+`instance_name`.cmd.options.get | Integer | Get options
 
 ___
 
@@ -940,10 +1272,25 @@ Parameter | Description | Default Value
 **ip_cmd** | Command to execute the ip utility. | `"/usr/sbin/ip"`
 **iptables_cmd** | Command to execute the iptables utility. | `"/usr/sbin/iptables"`
 
-___
+### Pubsub topics
 
-## Nexus
-
+Topic | Type | Description 
+:---  | :--- | :---
+*evt* | |
+`instance_name`.evt.stat | Integer | Set new stat
+`instance_name`.evt.timeout | String | Active timeout
+`instance_name_wdinet`.evt.def_iface | String | Restart module
+`instance_name_modem`.evt.bstat | Integer | Set bstat
+`instance_name_modem`.evt.cops | Integer |Set cops
+`instance_name`.evt.secure | Integer | it is 1 when GSM secure activated and working over 2G. Stopping VPN and it's 0 when GSM secure not activated, go to open.
+`instance_name`.evt.nl.dellink.`ifname` | String | Link down. Stop (not used).
+`instance_name`.evt.nl.delladdr.`ifname` | String | IP address removed. Stop (not used).
+*cmd* | |
+`instance_name`.cmd.addmetainfo | String | Add info to ping (not used)
+*sys* | |
+sys.evt.realtime | String | Add info to ping (not used)
+*other* ||
+`instance_name`.status.`ifname` | String | Publish a json with the status of the vpn.
 ### Description
 
 This module opens a [nexus](https://github.com/jaracil/nexus) connection.
@@ -1019,6 +1366,17 @@ Parameter | Description | Default Value
 **url_post** | Address to send the alert through POST. Not sent by POST if empty. | `""`
 **timeout** | Time in seconds to wait between tries to send the alert. It increments exponentially. | `3600`
 **max_ttl** | Maximum life time in seconds for the alert, when this time expires and the alert has not been notified, it's deleted. | `86400`
+### Pubsub topics
+
+Topic | Type | Description 
+:---  | :--- | :---
+*evt* | |
+`instance_name`.evt.stat | String | Call run machine
+`instance_name`.evt.mod.stat | Integer | If the value is 1, is_modem_started is activated else disable
+*cmd* | |
+`instance_name_modem`.cmd.sms | String | The alert is sent by sms
+*sys* | |
+sys.alert.`alert_path`| String | Alert is saved and managed
 
 ___
 
@@ -1078,7 +1436,17 @@ Parameter | Description | Default Value
 **keypress_min_secs** | Minimum number of seconds with the button pressed to execute the actions. | `0`
 **keypress_min_secs** | Maximum number of seconds with the button pressed to execute the actions. | `60`
 **actions** | JSON string with a list of the actions as defined in the description. | `"[]"`
+### Pubsub topics
 
+Topic | Type | Description | FlaGS
+:---  | :--- | :---| :---
+*evt* | | |
+`instance_name_evdev`.evt.mod.stat | Integer | Set new stat
+`instance_name_evdev`.qstat | Integer | Publish qstat value | MSG_FL_INSTANT
+`instance_name`.evt.btn.`type.code`| Integer | Publish type & code (not used)
+`action_topic` | Integer/Double/String | Post a value depending on the type of action (i,f,s)
+*sys* | |
+sys.evdev.`type.code` | String | Publish the information on evt.btn
 ___
 
 ## Gsrleds
@@ -1107,6 +1475,25 @@ This module is reponsible of subscribing to GSR events that require turning LEDs
 	    },
         ... other instances ...
     }
+
+### Pubsub topics
+
+Topic | Type | Description 
+:---  | :--- | :---
+*evt* | |
+`instance_name_modem`.evt.csq | Integer | The 3g led is evaluated, depending on the value the led is of one color or another.
+`instance_name_modem`.evt.creg | Integer | The 3g led is evaluated, depending on the value the led is of one color or another.
+`instance_name_modem`.evt.cops | Integer |The 3g led is evaluated, depending on the value the led is of one color or another.
+`instance_name_batery`.evt.soc_panic | Integer | if low level of battery, enable led else safe level of battery, disable led.
+`instance_name_gateway`.evt.stat | Integer | Depending on the state of the gateway, one publication or another is sent.
+`instance_name_telealarm`.evt.stat | Integer | Depending on the state of the telealarm, one publication or another is sent.
+*cmd* | |
+`instance_name`.cmd.working | Integer | Set a timer and post *cmd.trigger, cmd.brightness* with a setting
+`instance_name`.cmd.ok | Integer | Set a timer and post *cmd.trigger, cmd.trigger.`leds`.delay_on/off, cmd.brightness* with a setting
+`instance_name_leds`.cmd.brightness| String | 
+`instance_name`.cmd.nok | Integer | Post *cmd.trigger, cmd.brightness* with a setting
+sys.cmd.cfg.set | Integer | Activates in morse mode if not on call, outgoing, working
+sys.cmd.cfg.set.* | Integer | Activates in morse mode if not on call, outgoing, working
 
 ___
 
@@ -1183,7 +1570,23 @@ Parameter | Description | Default Value
 **wifi_offline_encryption** | Tipo de cifrado para la WiFi Offline | `psk-mixed`
 **wifi_offline_disable** | Deshabilitar red WiFi para la WiFi Offline | `true`
 **wifi_offline_key** | Contraseña de la red WiFi para la WiFi Offline | `12345678` 
-___
+
+### Pubsub topics
+
+Topic | Type | Description 
+:---  | :--- | :---
+*evt* | |
+`instance_name_exec`.evt.mod.stat | Integer |WAN and WLAN settings are modified. Safe mode is activated.
+*cmd* | |
+`instance_name`.cmd.setwifi | Integer | Enable WIFI
+`instance_name`.cmd.enable_wifi | Integer | Enable WIFI
+`instance_name`.cmd.set_wan_as_lan | Integer | Enable LAN
+`instance_name`.cmd.enable_wifi_offline | Integer | Disable WIFI
+`instance_name`.cmd.set_ppp_over_wan | Integer | Set config to WAN
+`instance_name`.cmd.get_model_ehci | String | Check gsr version and post version
+`instance_name`.cmd.get_udev_rules | String | Modify rules udev
+`instance_name`.cmd.reload_udev_rules | Integer | Update rules udev
+
 
 ## Modbus RTU
 
@@ -1243,7 +1646,28 @@ MONITOR FUNCTIONS
 `instance_name`.evt.frequency
 `instance_name`.cmd.monitor.stop:{"tag":"frequency"}
 
+### Pubsub topics
+
+Topic | Type | Description | Flags
+:---  | :--- | :---| :---
+*cmd* | | |
+`instance_name`.cmd.read.coils | String | Depending on the json read one addr or another
+`instance_name`.cmd.read.discrete_input| String|  Depending on the json read one addr or another
+`instance_name`.cmd.read.holding_registers| String|  Depending on the json read one addr or another
+`instance_name`.cmd.read.input_registers| String|  Depending on the json read one addr or another
+`instance_name`.cmd.write.single_coil| String| Depending on the json write one addr or another
+`instance_name`.cmd.write.single_holding_register| String| Depending on the json write one addr or another
+`instance_name`.cmd.write.multiple_coils| String|Depending on the json write one addr or another
+`instance_name`.cmd.write.multiple_holding_registers| String|Depending on the json write one addr or another
+`instance_name`.cmd.monitor.coils|String | Depending on the json it monitors one addr or another
+`instance_name`.cmd.monitor.stop|String | Del event
+`instance_name`.cmd.monitor.holding_registers|String |  Depending on the json it monitors one addr or another
+`instance_name_serial`.cmd.write.| Buffer| Publish sent to buffer |  MSG_FL_INSTANT / MSG_FL_NONRECURSIVE
+*evt*||
+`instance_name_serial`.evt.recv| Buffer | Read buffer and post frame in `modbus_frame`.evt.recv.frame.
+`instance_name_serial`.evt.mod.stat| Integer | Modify state
 ___
+
 
 ## Events
 
@@ -1288,6 +1712,13 @@ Parameter | Description | Default Value
 **topic**             | Obelisk topic to subscribe and monitor it's values                                    | `-`    
 **info_str**          | Extra data for the entrypoing.                                                        | `-`    
 **notify_event_path** | Path to send a notification that an event was sent.                                   | `-`    
+### Pubsub topics
+
+Topic | Type | Description 
+:---  | :--- | :---
+*cmd* | |
+`instance_name`.cmd.flush | String | Send events.
+`topic` | String | Event is received and treated.
 
 ___
 
@@ -1327,4 +1758,1251 @@ Parameter | Description | Default Value
 `instance_name`.evt.uptime.serial:15
 `instance_name`.evt.uptime.some_events:10
 
+### Pubsub topics
+
+Topic | Type | Description 
+:---  | :--- | :---
+*evt* ||
+`instance_name`.evt.cfg.get | String | Get config ,  Add/delete instances from monitor map and if it was the starting, subscribe to reloads.
+`instance_name_monitor`.evt.mod.stat | Integer | Publish to evt.publish.instance depending on the parameter received
+*cmd* | |
+sys.cmd.reload | String | Ask for the config again on system reloads
 ___
+
+
+## P100
+
+### Description
+
+The P100 protocol is a standard DTMF data communication protocol implemented by several remote alarms, used for test and/or alarm calls.
+### Configuration example
+
+    {
+        ... other instances ...
+        "p100": {
+            "audiogen_instance": "audiogen",
+            "autostart": true,
+            "car_number1": 13,
+            "car_number2": 3,
+            "car_number3": 0,
+            "car_number4": 0,
+            "id": 13,
+            "log_level": "none",
+            "max_respawn_delay": 60,
+            "modem_instance": "modem",
+            "module": "p100",
+            "respawn": true
+        },
+        ... other instances ...
+    }
+
+### Specific module parameters
+
+Parameter | Description | Default Value 
+:--- | :--- | :---
+**car_number_id[0]** |  id fo carnumber 1 | `-1`
+**car_number_id[1]** |  id fo carnumber 2 | `-1`
+**car_number_id[2]** |  id fo carnumber 3 | `-1`
+**car_number_id[3]** |  id fo carnumber 4 | `-1`
+**call_timeout** |  Timeout for max calls duration | `1800`
+**transmit_timeout** |  Timeout for init tone transmit/receive | `0.4`
+
+
+### Pubsub topics
+
+Topic | Type | Description 
+:---  | :--- | :---
+*evt* ||
+`instance_name`.evt.stat | String | Active ev_stat
+`instance_name`.evt.dtmf | String | Set dtmf and active ev_dtmf
+`instance_name_audiogen`.evt.stopped.`instance_name_modem` | String | Set stat to  MP100_WAITING_INIT_TONE
+*cmd* | |
+`instance_name`.cmd.emerg | String | Make a emerg call
+`instance_name`.cmd.emerg_no_voice | Integer | make a call without voice
+`instance_name`.cmd.autotest | Integer | Make a test call
+`instance_name`.cmd.failure | Integer | Set failure and set stat to MP100_WAITING_INIT_TONE
+`instance_name`.cmd.cancel | String | Set stat to  MP100_WAITING_START
+___
+
+## SIP
+
+### Description
+
+The SIP client is to be able to make emergency calls using only data.
+
+### Configuration example
+
+    {
+        ... other instances ...
+        "sip": {
+            "alert_timeout": 5,
+            "autostart": false,
+            "client_uri": "sip:user@IP",
+            "jbuf_max_pkts": 20,
+            "jbuf_min_pkts": 5,
+            "local_ip": "10.100.X.X",
+            "log_level": "info",
+            "max_respawn_delay": 10,
+            "media_enc": "",
+            "module": "sip",
+            "options_errors_max": 2,
+            "options_send_period": 0,
+            "options_send_timeout": 5,
+            "password": "*******",
+            "reg_expiration": 100,
+            "respawn": true,
+            "rx_dtmf_min_gain": -100,
+            "rx_dtmf_min_gap": 0,
+            "rx_dtmf_rfc": false,
+            "rx_dtmf_rtwist": -1,
+            "rx_dtmf_threshold": -100,
+            "rx_dtmf_twist": -1,
+            "rx_rtp_burst_delta": 1120,
+            "rx_rtp_burst_eob": 960,
+            "server_address": "10.X.X.X",
+            "slic_instance": "slic",
+            "transport": "udp",
+            "tx_dtmf_gain": -20,
+            "tx_dtmf_off_time": 50,
+            "tx_dtmf_on_time": 80,
+            "tx_dtmf_rfc": false,
+            "tx_dtmf_twist": 0,
+            "username": "******"
+        },
+      ... other instances ...
+    }
+
+### Specific module parameters
+
+Parameter | Description | Default Value 
+:--- | :--- | :---
+**server_address** |  SIP server where SIP client will request its registration |``
+**username** |  SIP client username |` `
+**password** |  SIP client password |` `
+**client_uri** |  SIP client UR | ` `
+**local_ip** |  IP to be used by SIP and RTP sockets | ` `
+**media_enc** |  RTP encryption options | ` `
+**transport** |  SIP Transport protocol: UDP, TCP, TLS | `udp `
+**tx_dtmf_rfc** |  'true': Only notify DTMF reception if it has been detected by RFC 2833; 'false': Notify also the receptions of inband DTMFs | `false`
+**tx_dtmf_rfc** |  'true': Transmit DTMF using RFC 2833; 'false': Transmit DTMF inband | `false`
+**tx_dtmf_on_time** |  Parameter for the inband DTMF generator: on_time value of audiogen cmd.play | `80 `
+**tx_dtmf_off_time** |  Parameter for the inband DTMF generator: off_time value of audiogen cmd.play | `50 `
+**tx_dtmf_gain** |  Parameter for the inband DTMF generator: level value of audiogen cmd.play | ` -20`
+**tx_dtmf_twist** |  Parameter for the inband DTMF generator: twist value of audiogen cmd.play | ` 0`
+**rx_dtmf_threshold** |  Parameter for the inband DTMF detector: threshold parameter of the spandsp library | ` -100`
+**rx_dtmf_twist** |  Parameter for the inband DTMF detector: twist parameter of the spandsp library  | ` -1`
+**rx_dtmf_rtwist** |  Parameter for the inband DTMF detector: rtwist parameter of the spandsp library | ` -1`
+**rx_dtmf_min_gap** |  Parameter for the inband DTMF detector: minimum ms between detected DTMFs | ` 30`
+**rx_dtmf_min_gain** |  Parameter for the inband DTMF detector: minimum gain (dB) | ` -30`
+**rx_rtp_burst_delta** | Minimum gap (ms) to consider a new audio burst has been detected | `1120`
+**reg_expiration** |  ms without receiving RTP packets to consider the end of the last audio burst | `3600`
+**rx_rtp_burst_eob** | ms without receiving RTP packets to consider the end of the last audio burst | `960`
+**jbuf_min_pkts** | Minimum number of RTP packets in the jitter buffer | ``
+**jbuf_max_pkts** |  SIP_JBUF_MIN_PKTS_DESC | ``
+
+
+
+### Pubsub topics
+
+Topic | Type | Description  | Flags
+:---  | :--- | :--- | :--- 
+*evt* | | |
+`instance_name_audiogen`.evt.stopped.`instance_name` | String | Set stat to  MP100_WAITING_START
+`instance_name`.evt.pcm.`instance_name` | Buffer | Publish send to buffer |MSG_FL_NONRECURSIVE
+`instance_name`.evt.needpcm.`instance_name` | Integer | Publish send to size buffer |MSG_FL_NONRECURSIVE
+
+*cmd* | | |
+`instance_name`.cmd.dial | String | Do call
+`instance_name`.cmd.hangup | Integer | Hang up call
+`instance_name`.cmd.dtmfsend | Integer | dtmfd is sent
+`instance_name`.cmd.qbstat | Integer | Publish syayus in *evt.bstat*
+`instance_name`.cmd.pcmsend | Buffer | Publish send to size buffer
+`instance_name`.cmd.stop | String | stop mudule
+
+___
+
+## SMART
+
+### Description
+
+This is the module that handles all the devices from the Smart Control Platform.
+
+### Configuration example
+
+    {
+        ... other instances ...
+        "smart": {
+        "module": "smart",
+        "serial_instance": "serial",
+        "can_instance": "socketcan",
+        "modbus_instance": "modbus",
+        "type": "liftcontroller",
+        "element": "otis2000"
+        },
+      ... other instances ...
+    }
+
+### Specific module parameters
+
+Parameter | Description | Default Value 
+:--- | :--- | :---
+**type** |  Element type to use. {liftcontroller, escalatorcontroller } | ` `
+**name** |  Element model to use | ` `
+**serial_instance** |  Instance of the serial module to use | ` `
+**can_instance** |  Instance of the socketcan module to use | ` `
+**modbus_instance** |  Instance of the modbus module to use | ` `
+
+
+
+### Pubsub topics
+
+Topic | Type | Description 
+:---  | :--- | :---
+*evt* | |
+`instance_name_serial`.evt.recv | String | A frame is received and passed to its instance
+`instance_name_serial`.evt.mod.stat | Integer | If the value is 1 it is stored, and it is activated
+`instance_name_can`.evt.frame | String | A frame is received and passed to its instance
+`instance_name_can`.evt.mod.stat | Integer | If the value is 1 it is stored, and it is activated
+`instance_name_modbus`.evt.frame | String | A frame is received and passed to its instance
+`instance_name_modbus`.evt.mod.stat | Integer | If the value is 1 it is stored, and it is activated
+`instance_name`.receive.evt.state | String | stores the state before sending the event
+*cmd* | |
+`instance_name`.cmd.telecontrol.activate | Integer | If the value is greater than 0, the remote control is activated, if not, it is turned off.
+`instance_name`.cmd.telecontrol.keypress | Integer / Buffer | Sends a keypress for telecontrol
+`instance_name`.cmd.telemetry.status | Integer | stores the state
+___
+
+## TRIGGER
+
+### Description
+
+This module triggers a publication depending on the the given input topics values
+
+### Configuration example
+
+    {
+        ... other instances ...
+        "relay_trigger": {
+            "module": "trigger",
+            "inputs": [
+                {
+                    "topic": "modem.evt.linkstatus"
+                }
+            ],
+            "trigger_min_secs": 10,
+            "trigger_period": 1,
+            "trigger_topic_true": "relay.cmd.off",
+            "trigger_topic_false": "",
+            "trigger_sticky": true
+        }
+      ... other instances ...
+    }
+
+### Specific module parameters
+
+Parameter | Description | Default Value 
+:--- | :--- | :---
+**trigger_topic_true** |  Action to take when the condition is true | ` `
+**trigger_topic_false** |  Action to take when the condition is false | ` `
+**trigger_min_secs** |  Time to perform the action | `0. `
+**trigger_period** |  Time to check | `0. `
+**condition_func** |  action to evaluate, or or and | `and `
+**trigger_sticky** |  Post to sticky | ` `
+**inputs** | subscribes to the topic, this has two parameters, topic and not [{topic, not},{}...] | `[] `
+**inputs_input_topic** | Subscribe to the topic | ` `
+**not** |  Deny the topic | ` `
+
+
+
+### Pubsub topics
+
+Topic | Type | Description 
+:---  | :--- | :---
+current_topic| String |depending on the configuration, when the topic is received, the configured publication is sent
+
+___
+
+## USBRELAY
+
+### Description
+
+Implements a pubsub interface to communicate with a usb relay
+### Configuration example
+
+    {
+        ... other instances ...
+        "relay": {
+                "autostart": true,
+                "module": "usbrelay",
+                "serial_instance": "serial",
+                "set_period": 2
+            },
+      ... other instances ...
+    }
+
+### Specific module parameters
+
+Parameter | Description | Default Value 
+:--- | :--- | :---
+**set_period** |  value to launch the timer to activate the relay | `60. `
+**address** |  address to send the packet by serial to the relay | ` 0x01`
+**serial_instance** |  Instance of the serial module to use | `serial `
+
+
+### Pubsub topics
+
+Topic | Type | Description 
+:---  | :--- | :---
+`instance_name`.cmd.on | Integer | activate the relay
+`instance_name`.cmd.off | Integer | deactivate the relay
+
+___
+
+
+## VMODEM
+
+### Description
+
+Module that initializes a virtual modem
+### Configuration example
+
+    {
+        ... other instances ...
+        "vmodem": {
+            "autostart": true,
+            "log_level": "debug",
+            "max_respawn_delay": 30,
+            "module": "vmodem",
+            "tty_type": "tty",
+            "tty_path": "/dev/ttyUSB0",
+            "baudrate": 38400,
+            "databits": 8,
+            "stopbits": 1,
+            "parity": "NONE",
+            "hwfc": false,
+            "swfc": false,
+            "conn_str": "CONNECT 38400",
+            "listen_ip": "127.0.0.1",
+            "listen_port": 5555
+        }
+      ... other instances ...
+    }
+
+### Specific module parameters
+
+Parameter | Description | Default Value 
+:--- | :--- | :---
+**tty_type** |  TTY type (TTY, PTY, SOCK, ...) | `tty `
+**tty_path** | TTY device path | `/dev/ttyUSB0`
+**tty_wdt** |  TTY WatchDog timer | `0 `
+**ign_cmd** |  TTY flag to ignore AT commands | `false`
+**dtr_mode** | DTR mode 0=0ff 1=on 2=DCD | `0 `
+**sync_delay** | TTY sync_delay in milliseconds | `0 `
+**baudrate** |  Port baudrate | `9600`
+**databits** |  databits | `0 `
+**parity** |  parity | `NONE`
+**stopbits** |  stopbits | `0`
+**tty_hwfc** |  tty hardware flow contro | `false`
+**tty_swfc** |  tty software flow control | `false`
+**listen_ip** |  Listen ip | `127.0.0.1`
+**listen_port** |  Listen port | `0`
+**init_str** |  Modem init string | `e1v1q0`
+**conn_str** |  Connection message in verbose mode | `CONNECT 9600`
+**conn_code** | Connection message in non-verbose mode | `1`
+**conn_delay** | Delay before connect message | `2000`
+**ring_delay** | Delay between rings | `2000`
+**keep_conn** |  Keep first connection | `true`
+**wait_at** |  Wait AT before accepting connections | `false`
+**dial_port** |  Default dial port | `7740`
+**info_val** |  Info strings (ATIn) | `N4M-MODEM`
+**imsi** |  imsi | `214032081166450`
+**csq** |  csq | `21,99`
+**dtt** |  Dial translation table | `[]`
+
+
+### Pubsub topics
+
+Topic | Type | Description 
+:---  | :--- | :---
+*evt*||
+`instance_name`.evt.stat | String | update the state, getting it from the modem instance.
+
+___
+
+## ACQCARD
+
+### Description
+Is responsible for bridging with the data acquisition card (advertisim/gsr)
+
+### Configuration example
+
+    {
+        ... other instances ...
+        "acqcard": {
+            "alerts": "[]",
+            "autostart": true,
+            "module": "acqcard",
+            "pins": {
+                "pin00": {
+                    "label": "#ARROW_UP",
+                    "visibility": true
+                },
+                "pin01": {
+                    "label": "#FLOOR_BIT_1",
+                    "visibility": true
+                },
+                "pin02": {
+                    "label": "#FLOOR_BIT_2",
+                    "visibility": true
+                },
+                "pin03": {
+                    "label": "#FLOOR_BIT_3",
+                    "visibility": true
+                },
+                "pin04": {
+                    "label": "#FLOOR_BIT_4",
+                    "visibility": true
+                },
+                "pin05": {
+                    "label": "#FLOOR_BIT_5",
+                    "visibility": true
+                },
+                "pin06": {
+                    "label": "#FLOOR_BIT_6",
+                    "visibility": true
+                },
+                "pin07": {
+                    "label": "#FLOOR_BIT_7",
+                    "visibility": true
+                },
+                "pin08": {
+                    "label": "#FLOOR_BIT_8",
+                    "visibility": true
+                },
+                "pin09": {
+                    "label": "#FLOOR_BIT_0",
+                    "visibility": true
+                },
+                "pin10": {
+                    "label": "#ARROW_DOWN",
+                    "visibility": true
+                },
+                "pin11": {
+                    "label": "#IN_MOTION",
+                    "visibility": true
+                },
+                "pin12": {
+                    "label": "#UNDER_MAINTENANCE",
+                    "visibility": true
+                },
+                "pin13": {
+                    "label": "#OPEN_DOORS",
+                    "visibility": true
+                },
+                "pullup": {
+                    "label": "Pull Up",
+                    "visibility": true
+                },
+                "relay": {
+                    "label": "Relay",
+                    "visibility": true
+                }
+            },
+            "tty": "/dev/ttyACM0"
+        }      
+        ... other instances ...
+    }
+
+### Specific module parameters
+
+Parameter | Description | Default Value 
+:--- | :--- | :---
+**telemetry_type** | telemetry type | `liftcontroller `
+**subelement_telemetry** | item that is doing telemetry | `cabin1`
+**tty** |  TTY device path | ` `
+**baudrate** |  Port baudrate | `9600`
+**alerts** | JSON describing the alerts | `[] `
+**pins** | Pins definition | ``
+
+
+
+### Pubsub topics
+
+Topic | Type | Description 
+:---  | :--- | :---
+*evt*||
+`instance_name`.evt.pins.* | Integer |  Configurable alerts on pin changes and alerts are managed.
+*cmd*||
+`instance_name`.cmd.raw.* | Buffer | modify output pins
+`instance_name`.cmd.relay | Integer | turn the relay on or off
+`instance_name`.cmd.get.inputs | String | get the value of the inputs
+`instance_name`.cmd.get.outputs | String | get the value of the outputs
+
+___
+
+## ADC
+
+### Description
+
+Reads the ADC state
+### Configuration example
+
+    {
+        ... other instances ...
+        "adc": {
+            "autostart": true,
+            "module": "adc",
+            "voltage_factor": 0.0085,
+            "voltage_path": "/sys/devices/platform/i2c-gpio.0/i2c-0/0-004d/in0_input",
+            "voltage_read_secs": 2.5
+        }
+      ... other instances ...
+    }
+
+### Specific module parameters
+
+Parameter | Description | Default Value 
+:--- | :--- | :---
+**openwrt-cfg_instance** |  TTY type (TTY, PTY, SOCK, ...) | `openwrt-cfg `
+**voltage_path** | TTY device path | `/sys/devices/platform/i2c-gpio.0/i2c-0/0-004d/in0_input`
+**voltage_read_secs** |  TTY WatchDog timer | `2.5`
+**feed_missing_alert** |  TTY WatchDog timer | `9`
+**feed_missing_safe** |  TTY WatchDog timer | `18`
+**undervolt_alert** |  TTY WatchDog timer | `14`
+**undervolt_safe** |  TTY WatchDog timer | `14.5`
+**overvolt_alert** |  Overvolt Alert | `23`
+**overvolt_safe** |  Overvolt Safe | `23.5`
+**alert_time_feed_missing** |  elapsed seconds without feed | `900`
+**alert_time_undervolt** |  elapsed time being voltage under the low limit | `900`
+**alert_time_overvolt** |  elapsed time being voltage over the high limit | `900`
+
+
+### Pubsub topics
+
+Topic | Type | Description 
+:---  | :--- | :---
+*evt*||
+`instance_name`.evt.voltage | String | Publish voltage
+sys.alert.`instance_name.type` | String |Publish alert, type: feed_missing, overvoltage, undervoltage
+`instance_name`.evt.`alert type`| Integer | Publish 0 for disable alert and 1 to active, type :feed_missing, overvoltage, undervoltage
+*info*||
+info.gsr_version | String | Get hw version and edit to voltage_factor
+___
+
+## ALSAPLAY (Deprecated)
+
+### Description
+play sound
+### Configuration example
+
+    {
+        ... other instances ...
+        "aplay": {
+            "autostart": true,
+            "module": "alsaplay",
+            "dev": "plug:hw:0",
+            "period_time": 20000,
+            "buffer_time": 0
+        },
+      ... other instances ...
+    }
+
+### Specific module parameters
+
+Parameter | Description | Default Value 
+:--- | :--- | :---
+**alsadev** |   alsa device| `plughw:0,0`
+**period_time** | period_time | `20000`
+**buffer_time** |  buffer time | `period_time *10`
+
+
+
+### Pubsub topics
+
+Topic | Type | Description | Flags
+:---  | :--- | :---| :---
+*evt*| | |
+`instance_name`.evt.needpcm | Integer | Publish size of buffer | MSG_FL_INSTANT / MSG_FL_NONRECURSIVE
+`instance_name`.evt.pcmsend | Buffer | Send to buffer | MSG_FL_INSTANT / MSG_FL_NONRECURSIVE
+
+___
+
+## ALSAREC (Deprecated)
+
+### Description
+Play sound
+
+### Configuration example
+
+    {
+        ... other instances ...
+        "arec": {
+            "autostart": true,
+            "module": "alsarec",
+            "dev": "plug:hw:0",
+            "period_time": 20000,
+            "buffer_time": 0
+            }
+      ... other instances ...
+    }
+
+### Specific module parameters
+
+Parameter | Description | Default Value
+:--- | :--- | :---
+**alsadev** |   alsa device| `plughw:0,0`
+**period_time** | period_time | `20000`
+**buffer_time** |  buffer time | `period_time *4`
+
+
+
+### Pubsub topics
+
+Topic | Type | Description  | Flags
+:---  | :--- | :---| :---
+*evt*|||
+`instance_name`.evt.pcm | Buffer | Publish to buffer | MSG_FL_INSTANT / MSG_FL_NONRECURSIVE
+
+___
+## ALSAPLAY (Deprecated)
+
+### Description
+play sound
+### Configuration example
+
+    {
+        ... other instances ...
+        "aplay": {
+            "autostart": true,
+            "module": "alsaplay",
+            "dev": "plug:hw:0",
+            "period_time": 20000,
+            "buffer_time": 0
+        },
+      ... other instances ...
+    }
+
+### Specific module parameters
+
+Parameter | Description | Default Value 
+:--- | :--- | :---
+**alsadev** |   alsa device| `plughw:0,0`
+**period_time** | period_time | `20000`
+**buffer_time** |  buffer time | `period_time *10`
+
+
+
+### Pubsub topics
+
+Topic | Type | Description | Flags
+:---  | :--- | :---| :---
+*evt*| | |
+`instance_name`.evt.needpcm | Integer | Publish size of buffer | MSG_FL_INSTANT / MSG_FL_NONRECURSIVE
+`instance_name`.evt.pcmsend | Buffer | Send to buffer | MSG_FL_INSTANT / MSG_FL_NONRECURSIVE
+
+___
+
+## ALSAREC (Deprecated)
+
+### Description
+Play sound
+
+### Configuration example
+
+    {
+        ... other instances ...
+        "arec": {
+            "autostart": true,
+            "module": "alsarec",
+            "dev": "plug:hw:0",
+            "period_time": 20000,
+            "buffer_time": 0
+            }
+      ... other instances ...
+    }
+
+### Specific module parameters
+
+Parameter | Description | Default Value
+:--- | :--- | :---
+**alsadev** |   alsa device| `plughw:0,0`
+**perio
+## ALSAPLAY (Deprecated)
+
+### Description
+play sound
+### Configuration example
+
+    {
+        ... other instances ...
+        "aplay": {
+            "autostart": true,
+            "module": "alsaplay",
+            "dev": "plug:hw:0",
+            "period_time": 20000,
+            "buffer_time": 0
+        },
+      ... other instances ...
+    }
+
+### Specific module parameters
+
+Parameter | Description | Default Value 
+:--- | :--- | :---
+**alsadev** |   alsa device| `plughw:0,0`
+**period_time** | period_time | `20000`
+**buffer_time** |  buffer time | `period_time *10`
+
+
+
+### Pubsub topics
+
+Topic | Type | Description | Flags
+:---  | :--- | :---| :---
+*evt*| | |
+`instance_name`.evt.needpcm | Integer | Publish size of buffer | MSG_FL_INSTANT / MSG_FL_NONRECURSIVE
+`instance_name`.evt.pcmsend | Buffer | Send to buffer | MSG_FL_INSTANT / MSG_FL_NONRECURSIVE
+
+___
+
+## AMBER (Deprecated)
+
+### Description
+mod_amber is used to receive frames from meters compatible with wM-BUS.
+
+    http://wiki.nayarsystems.com/display/H72/Modulo+Amber+Wireless+wM-BUS
+### Configuration example
+
+    {
+        ... other instances ...
+        "amber" : {
+            "module"            : "amber",
+            "respawn"           : true,
+            "max_respawn_delay" : 60.0,
+            "autostart"         : true,
+            "log_level"         : "debug",
+            "baudrate"          : 9600,
+            "tty_wmbus"         : "/dev/ttyUSB0",
+            "frame_rssi"        : true,
+            "wmbus_mode"        : 8,
+            "max_packet_len"    : 250,
+            "encryption"        : false
+        }
+      ... other instances ...
+    }
+
+### Specific module parameters
+
+Parameter | Description | Default Value 
+:--- | :--- | :---
+**tty/tty_wmbus** | Serial TTY device | `/dev/ttyUSB0`
+**baudrate** | Serial baudrate. | `9600`
+**frame_rssi** |  buffer time | `false`
+**wmbus_mode** |  operation mode | `3`
+**max_packet_len** |  max packet len | `250`
+**encryption** |  enable encryption? | `false`
+
+
+### Pubsub topics
+Topic | Type | Description | Flags
+:---  | :--- | :---| :---
+*evt*| | |
+`instance_name`.evt.stat | Integer | Publish stat 
+`instance_name`.evt.bstat | Integer | Publish amber stat
+`instance_name`.evt.recv | Buffer | Publish command frame received from amber device | MSG_FL_INSTANT / MSG_FL_NONRECURSIVE
+`instance_name`.evt.recv.raw | Buffer | Publish raw  | MSG_FL_INSTANT / MSG_FL_NONRECURSIVE
+`instance_name`.evt.json | Buffer | Publish  json frame 
+`instance_name`.evt.timeout | Integer | Publish  timeout | MSG_FL_INSTANT 
+
+___
+
+
+## BCAST
+
+### Description
+module that is responsible for making a retransmission of the topics that have been assigned.
+
+### Configuration example
+
+    {
+        ... other instances ...
+        "bcast": {
+            "module": "bcast",
+            "interface_name": "enp2s0",
+            "topics": [
+                "console.evt.mod.stat",
+                "test"
+            ]
+        }
+      ... other instances ...
+    }
+
+### Specific module parameters
+
+Parameter | Description | Default Value 
+:--- | :--- | :---
+**broadcast_port** | broadcast port | `3334`
+**broadcast_address** | broadcast address | `239.255.42.1`
+**wdinet_instance** |  wdinet instance | `wdinet`
+**interface_name** |  interface name | `eth0`
+**topics** |  Topics list | `[ ]`
+
+
+### Pubsub topics
+Topic | Type | Description | Flags
+:---  | :--- | :---| :---
+*evt*| | |
+`instance_name`.evt.msgin.`topic` | Buffer | Publish buffer 
+`instance_name_wdinet`.nl.newlink.`interface_name` | Buffer | Publish command frame received from amber device | MSG_FL_INSTANT / MSG_FL_NONRECURSIVE
+symsys.stat.device | Buffer | Publish buffer | MSG_FL_STICKY / MSG_ENC_MSGPACK
+subscribe - symsys.stat.device | * | Depending on the data received, one thing or another is done. The message is processed 
+subscribe - `topic list` | * | Depending on the data received, one thing or another is done. The message is processed 
+ *cmd*| | |
+`instance_name`.cmd.query | String | receives a json and stores the necessary information product, id, topic
+
+
+___
+
+
+## DIALER
+
+### Description
+ Generic dialer to enable the possibility of using several types of dialers (mod_sip, mod_modem) at the same time in other modules such as "mod_gw", "mod_telealarm" or "mod_tas
+### Configuration example
+
+    {
+        ... other instances ...
+        "dialer": {
+            "autostart": true,
+            "dialer_instance_0": "modem",
+            "dialer_instance_1": "sip",
+            "dialer_instance_2": "",
+            "dialer_instance_3": "",
+            "dialer_instance_4": "",
+            "log_level": "debug",
+            "module": "dialer",
+            "respawn": true
+        },
+      ... other instances ...
+    }
+
+### Specific module parameters
+
+Parameter | Description | Default Value 
+:--- | :--- | :---
+**dialer_instance_0** | dialer instance | ` `
+**dialer_instance_1** | dialer instance | ` `
+**dialer_instance_2** |  dialer instance | ` `
+**dialer_instance_3** |  dialer instance | ` `
+**fallback** |  activate to publish the *evt.linkstatus* of the dialer | `false`
+
+
+### Pubsub topics
+Topic | Type | Description | Flags
+:---  | :--- | :---| :---
+*evt*| | |
+`instance_name`.evt.stat | String | Activate to flags evt 
+`instance_name_sip`.evt.linkstatus | String | publish the *evt.linkstatus* of the dialer, if fallbak is true 
+*cmd*| | |
+`instance_name`.cmd.hangup | String | hangup to call
+`instance_name`.cmd.answer | String | answet to call
+`instance_name`.cmd.qbstat | String | Publish dialer stat to `evt.linkstatus`, stats (unsetm setup, idle,dial, ring,online, failure)
+`instance_name`.cmd.dial | String | Make call
+`instance_name`.cmd.dial_result | String | Return call result (error,ok), if result is error , try call
+`instance_name`.cmd.dtmfsend | String | Publish dtmf
+`instance_name`.cmd.pcmsend | String | Publish pcm buffer 
+
+___
+
+
+## EDEL (Deprecated)
+
+### Description
+Module to communicate with edel maneuvers
+### Configuration example
+
+    {
+        ... other instances ...
+        "edel": {
+            "autostart": true,
+            "serial_instance": "serial",
+            "module": "edel"
+
+        },
+      ... other instances ...
+    }
+
+### Specific module parameters
+
+Parameter | Description | Default Value 
+:--- | :--- | :---
+**serial_instance** | serial instance | ` serial`
+
+
+
+### Pubsub topics
+Topic | Type | Description | Flags
+:---  | :--- | :---| :---
+`instance_name_serial`.recv | Buffer | rreceives a buffer, analyzes the information and publishes a json in sys.alert.`instance_name` with the information received plant and error code
+
+___
+
+## GB_BRIDGE 
+
+### Description
+Module in charge of transforming real time data and sending them by mqtt.
+### Configuration example
+
+    {
+        ... other instances ...
+        "gb_bridge": {
+            "autostart": true,
+            "module": "gb_bridge",
+            "smart_instance": "smart@123",
+            "mqtt_instance": "mqtt",
+            "tz": "CST-8",
+            "refresh_period": 600
+	    },
+      ... other instances ...
+    }
+
+### Specific module parameters
+
+Parameter | Description | Default Value 
+:--- | :--- | :---
+**smart_instance** | serial instance | ` `
+**mqtt_instance** | serial instance | ` `
+**refresh_period** | refresh period | `600`
+**tz** | tz | `CST-8`
+
+
+### Pubsub topics
+Topic | Type | Description | Flags
+:---  | :--- | :---| :---
+*evt* | | |
+`instance_name_mqtt`.evt.mod.stat | Integer | a 0 is published in *`instance_name_smart`.qstat* if the status is 1
+`instance_name_smart`.evt.telemetry.liftcontroller.* | Buffer |  received event, the information is treated and published in `instance_name_mqtt`cmd.pub
+`instance_name`.status.refresh.`instance_name_smart` | String | a json is received and the cabin status is sent
+*cmd* | | |
+`instance_name_mqtt`cmd.pub | String | Publish Json
+___
+
+
+## GPIO
+
+### Description
+Module in charge of transforming real time data and sending them by mqtt.
+### Configuration example
+
+    {
+        ... other instances ...
+        "gpio": {
+            "autostart": true,
+            "module": "gpio",
+            "pin": "12",
+            "direction": "in",
+            "initial_value": "0",
+            "debounce": 0.01
+	    },
+      ... other instances ...
+    }
+
+### Specific module parameters
+
+Parameter | Description | Default Value 
+:--- | :--- | :---
+**pin** | pin id | ` -1`
+**direction** | pin direcction in or out | ` in`
+**initial_value** | default value | `0`
+**debounce** | time of repeat | `0.01`
+
+
+### Pubsub topics
+Topic | Type | Description | Flags
+:---  | :--- | :---| :---
+*evt* | | |
+`instance_name`.evt.info | Buffer |  publish json with value & prev_width | MSG_FL_INSTANT
+*cmd* | | |
+`instance_name_smart`.cmd.getvalue | Buffer |  publish value
+`instance_name_mqtt`.cmd.setvalue | Integer | the pin value is modified, if the pin direction is out
+
+___
+
+
+## GSR_LOCALCFG
+
+### Description
+module in charge of loading the local configuration of the gsr
+### Configuration example
+
+    {
+        ... other instances ...
+        "gsr-localcfg":	{
+            "autostart":	true,
+            "log_level":	"none",
+            "max_respawn_delay":	60,
+            "module":	"gsr-localcfg",
+            "respawn":	true
+        }
+      ... other instances ...
+    }
+
+### Specific module parameters
+
+Parameter | Description | Default Value 
+:--- | :--- | :---
+**max_respawn_delay** | max_respawn_delay | ` 60`
+
+### Pubsub topics
+Topic | Type | Description | Flags
+:---  | :--- | :---| :---
+`topic`| All | Clone msg
+*cmd* | | |
+`instance_name`.cmd.setwm | Buffer | publish value
+`instance_name`.cmd.settap100 | String | modify the configuration of pq00 , editing the id of the card_number
+`instance_name`.cmd.setblock | Integer | edit config, if value is 1  turn off modules (sms, modem, button_config,button_factory) else turn on modules (sms, modem, button_config,button_factory) 
+sys.cmd.cfg.set.`instance_name.item_name`| String | Publish json | MSG_FL_INSTANT
+sys.cmd.reload | Integer | Ask for the config again on system reloads
+___
+
+
+## MQTT
+
+### Description
+MQTT client module acting as a bridge between internal pubsub and MQTT protocol (external).
+
+### Configuration example
+
+    {
+        ... other instances ...
+        "mqtt": {
+            "module": "mqtt",
+            "max_respawn_delay": 10,
+            "autostart": true,
+            "log_level": "debug",
+            "respawn": true,
+            "server_address": "localhost",
+            "server_port": 1883,
+            "username": "example",
+            "password": "1234",
+            "ssl": false,
+            "keep_alive": 30,
+            "clean_session": true,
+            "last_will_topic": "bye",
+            "last_will_message": "bye",
+            "last_will_qos": 0,
+            "last_will_retain": true,
+            "sub_internal": [
+                {
+                    "topic": "max17048.evt.*",
+                    "qos": 0
+                },
+                {
+                    "topic": "modem.evt.*",
+                    "qos": 2
+                }
+            ],
+            "sub_external": [
+                {
+                    "topic": "obelisk/$id/rpc/+/max17048/evt/#",
+                    "qos": 0
+                },
+                {
+                    "topic": "obelisk/$id/rpc/+/modem/evt/#",
+                    "qos": 2
+                }
+            ]
+        }
+      ... other instances ...
+    }
+
+### Specific module parameters
+
+Parameter | Description | Default Value 
+:--- | :--- | :---
+**server_address** | server address | ` `
+**server_port** | server port | ` 1883`
+**user_name** | user | ` `
+**password** | password | ` `
+**keapalive** | time of keapalive | ` 30`
+**ssl** | ssl | ` false`
+**clean_session** | clean session | ` true`
+**last_will_topic** |  last_will_topic| `obelisk/$id/bye`
+**last_will_mesage** |last_will_mesage  | `connection lost`
+**last_will_qos** |last_will_qos  | `0`
+**last_will_retain** |last_will_retain  | `false`
+
+
+
+### Pubsub topics
+Topic | Type | Description | Flags
+:---  | :--- | :---| :---
+*cmd* | | |
+`instance_name`.cmd.internal.sub | String | Subscribe internal topic
+`instance_name`.cmd.external.sub  | String | Subscribe external topic
+`instance_name`.cmd.internal.usub | Buffer | Unsubscribe internal topic
+`instance_name`.cmd.external.usub  | String |  Unsubscribe external topic
+`instance_name`.cmd.pub| Integer | String | recive Json & subscribe topic
+`instance_name`.evt.rpc.*| String | Send mesage to mqtt
+
+____
+
+
+
+## TAS
+
+### Description
+MQTT client module acting as a bridge between internal pubsub and MQTT protocol (external).
+
+### Configuration example
+
+    {
+        ... other instances ...
+       	"tas": {
+            "autostart": true,
+            "module": "tas",
+            "slic_instance": "slic",
+            "slic_pcm_gain": -5,
+            "modem_pcm_gain": 2,
+            "modem_instance": "modem",
+            "gw_instance": "gateway",
+            "protocol": "p100",
+            "p100_start_delay": 2,
+            "p100_pkt_input_timeout": 2,
+            "p100_disconnect_delay": 2
+        }
+      ... other instances ...
+    }
+
+### Specific module parameters
+
+Parameter | Description | Default Value 
+:--- | :--- | :---
+**slic_pcm_gain** | slic pcm | ` 0`
+**modem_pcm_gain** | pcm again | ` 0`
+**protocol** | protocol use | ` p100`
+
+
+
+
+### Pubsub topics
+Topic | Type | Description | Flags
+:---  | :--- | :---| :---
+*evt* | | |
+`instance_name`.evt.stat | String | Active evt.stat
+`instance_name`.evt.instance.ended | String | Instance ended
+`instance_name`.evt.slic_dtmfsend| String | If buffer_used is more than 0, send to buffer
+`instance_name`.evt.modem_dtmfsend| String | Send buffer
+`instance_name_gw`.evt.stat| String | update gw_stat
+`instance_name_slic`.evt.dtmf | String | 
+`instance_name_slic`.evt.onhook | String | on hook call
+`instance_name_slic`.evt.pcm | String | Publish pcm buffer in slic.cmd.pcmsend | MSG_FL_NONRECURSIVE
+`instance_name_modem`.evt.pcm | String | Publish pcm buffer in modem.cmd.pcmsend | MSG_FL_NONRECURSIVE
+`instance_name_modem`.evt.dtmf | String | 
+`instance_name_modem`.evt.bstat | String | Subscribe internal topic
+*cmd* | | |
+`instance_name`.cmd.setparams | String | Set config
+`instance_name`.cmd.dial  | String | Make call
+`instance_name`.cmd.slic_dtmfsend | Buffer | Send buffer
+`instance_name`.cmd.modem_dtmfsend  | String | forward the message to modem.cmd.dtmfsend
+`instance_name`.cmd.disable_pcm_regen| Integer | String | active disable_pcm_regen
+`instance_name`.evt.enable_pcm_regen| String |disable disable_pcm_regen
+
+____
+
+
+
+## TCP
+
+### Description
+Manages TCP connection
+### Configuration example
+
+    {
+        ... other instances ...
+        "tcp": {
+            "module": "tcp",
+            "autostart": true,
+            "port": 52101,
+            "ip_server": "127.0.0.1"
+        }
+      ... other instances ...
+    }
+
+### Specific module parameters
+
+Parameter | Description | Default Value 
+:--- | :--- | :---
+**port** | port for socket connection | ` 52101`
+**ip_server** | Ip for socket connection | ` 127.0.0.1`
+**size_buffer** | Size of the frames that we will receive | ` 8192`
+**write_topic** | Topic to write frames | ` p100`
+**read_topic** | Topic to read frames | ` p100`
+**bridge** | Activate tcp-bridge mode | ` false`
+**accept_new_conn** | Accept new tcp conection | ` false`
+**timeout** | TCP connection timeout| ` 600`
+**whitelist** | Subnet list permit| ` 127.0.0.1`
+
+
+
+### Pubsub topics
+Topic | Type | Description | Flags
+:---  | :--- | :---| :---
+*evt* | | |
+`instance_name`.evt.recv | Buffer | Publish the buffer received by tcp | MSG_FL_INSTANT / MSG_FL_NONRECURSIVE
+`write_topic` | Buffer | Publish the buffer received by tcp | MSG_FL_INSTANT / MSG_FL_NONRECURSIVE
+*cmd*|||
+`instance_name`.cmd.write | Buffer | Send the buffer by tcp 
+`read_topic` | Buffer | Send the buffer by tcp 
+____
+
+
+## EPCL
+
+### Description
+EPCL is responsible for measuring the kinetic energy recovery system
+### Configuration example
+
+    {
+        ... other instances ...
+        "epcl": {
+            "autostart": true,
+            "module": "epcl",
+            "log_level": "debug",
+            "can_instance": "socketcan",
+            "epcl_id": 0 
+        }
+        ... other instances ...
+    }
+
+### Specific module parameters
+
+Parameter | Description | Default Value 
+:--- | :--- | :---
+**hist_battery_voltage** | battery voltage threshold publish value (0.1V/1) | ` 5`
+**hist_battery_current** | battery current threshold publish value (1A/1) | `5`
+**hist_dc_power** | DC link power threshold publish value (1W/1)| ` 20`
+**hist_dc_voltage** | DC link current threshold publish value (0.1A/1)| ` 30`
+**hist_dc_current** | Topic to read frames | ` 5`
+**hist_ac_charger_current** | AC charger current threshold publish value (0.1A/1). | ` 5`
+**hist_ac_inverter_current** | AC inverter current threshold publish value (0.1A/1). | ` 5`
+**hist_solar_current** | Solar charger current threshold publish value (0.1A/1).| ` 5`
+**epcl_id** |epcl id (0...15)| `0`
+
+
+
+### Pubsub topics
+Topic | Type | Description | Flags
+:---  | :--- | :---| :---
+*evt* | | |
+`instance_name_can`.evt.frame | Buffer | can frames are received and processed
+`instance_name`.evt.telemetry | String | Publish json with status 
+`instance_name`.evt.telemetry.dev`epcl_id` | String | Publish information only the changed values.
+sys.evt.telemetry.`instance_name`.dev`epcl_id` | String | Publish information only the changed values.
+epcl.telemetry.dev`epcl_id` | String | Publish information only the changed values.
+*cmd*|||
+`instance_name`.cmd.control | Buffer | can frames are sent to the maneuver 
+`instance_name`.cmd.telemtery.activate | Integer | if value is 1 telemetry activate, else telemtry disable
+`instance_name`.cmd.info | Buffer | information is requested through a publication can.cmd.frame
+`instance_name`.cmd.telemtery.status | Buffer | publish `instance_name`.cmd.info with value 0, and `instance_name`.cmd.control with value 1
+____
