@@ -3006,3 +3006,67 @@ epcl.telemetry.dev`epcl_id` | String | Publish information only the changed valu
 `instance_name`.cmd.info | Buffer | information is requested through a publication can.cmd.frame
 `instance_name`.cmd.telemtery.status | Buffer | publish `instance_name`.cmd.info with value 0, and `instance_name`.cmd.control with value 1
 ____
+
+
+## NAM
+
+### Description
+EPCL is responsible for measuring the kinetic energy recovery system
+### Configuration example
+
+    {
+        ... other instances ...
+        "nam1": {
+                "module": "nam",
+                "car_number": 1,
+                "bcast_instance": "bcast",
+                "filter_audio_path": "./audio/estableciendo.wav",
+                "ring_audio_path": "./audio/ringing.wav"
+            },
+        ... other instances ...
+    }
+
+### Specific module parameters
+
+Parameter | Description | Default Value 
+:--- | :--- | :---
+**filter_audio_path** | audio file path | ` `
+**filter_countdown_audio_path** | audio file path | ` `
+**ring_audio_path** | Ring audio file path | ` `
+**car_number** | Cabin number to use | ` -1`
+**soc_alert** | Percentage to trigger the low battery alert | ` 25`
+**soc_alert_error** | Percentage to trigger the battery error aler | ` 10`
+**max_vbat** | Maximum battery voltage in mV | ` 4100`
+**min_vbat** | Minimum battery voltage in mV | ` 3200`
+**mic_volume** |Microphone volume| ` 5`
+**speaker_volume** |Cabin speaker volume| ` 5`
+**leds_mode_minimum** |Configure minimal mode for LEDs| ` false`
+**daytime_speech_volume** |Voice synthesis volume during daytime| ` 5`
+**daytime_hour_start** |Daytime start time in 24h format| ` 6`
+**daytime_hour_end** |Daytime start time in 24h format| ` 22`
+
+
+
+### Pubsub topics
+Topic | Type | Description | Flags
+:---  | :--- | :---| :---
+*evt* | | |
+`instance_name_wdinet`.evt.nl.newlink.`interface_name` | String | stop module 
+`SYMSYS_NAM_STAT_TOPIC`.evt.msgin.`instance_name_bcast` | String | the module is configured, with the information of the physical audio module 
+`SYMSYS_POWER_STAT_TOPIC`.evt.msgin.`instance_name_bcast` | String |voltage information is obtained and alerts are verified
+`instance_name_audiogen`.evt.started | Buffer | audio playing is set to true
+`instance_name_audiogen`.evt.stopped | Buffer | audio playing is set to false, and active alarm_status
+`nam.evt.state` | String | Publish  json with information, {index, call, alarm, test,mic_volum,speaker_volume} | MSG_FL_STICKY
+`instance_name`.evt.battery.stat | Integer | Publish state battery {BAT_LOW: 1,BAT_LOW_CLEAR: 2, BAT_ERROR: 3, BAT_ERROR_CLEAR: 4 }
+*cmd* | | |
+`instance_name`.cmd.pcmsend | Buffer |  Publish send to buffer.
+`instance_name`.cmd.call_status | String | update call status ,set CALL_STARTED  
+`instance_name`.cmd.failed_alarm | String |  update call status ,set CALL_ENDED
+`instance_name`.cmd.end_of_alarm | String | update call status ,set FALSE
+`instance_name`.cmd.eoa | String | update call status ,set FALSE 
+`instance_name`.cmd.interphone.start | String | update call status ,set CALL_SUCCEDED 
+`instance_name`.cmd.interphone.stop | String | update call status ,set CALL_ENDED
+`instance_name`.cmd.set_test_result | String |update test status 
+`instance_name`.cmd.tx | String | packages are sent
+
+____
