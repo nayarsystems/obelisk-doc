@@ -314,17 +314,16 @@ This module is an auxiliary that allows to reproduce sound and publish it to oth
         ... other instances ...
     }
 
-___
 ### Pubsub topics
 
-Topic | Type | Description | Flags
+Topic | Type | Description 
 :---  | :--- | :---
 *evt* | |
 `instance_name`.evt.started.`topic` | Integer | Publish activate to topic
 `instance_name`.evt.stopped.`topic` | Integer | Publish disable to topic
 `instance_name`.evt.needpcm | Integer | Publish verify the configuration and send a publication of evt.started
 *cmd* | |
-`instance_name`.cmd.stop.`topic` |  | Publish close audiogen
+`instance_name`.cmd.stop.`topic` |   | Publish close audiogen
 `instance_name`.cmd.play.* | | Publish activate audiogen and post *cmd.isplaying*
 `instance_name`.cmd.isplaying.`topic` | String | Pubblish to topic and return 1.
 
@@ -578,7 +577,7 @@ Parameter | Description | Default Value
 ### Pubsub topics
 
 Topic | Type | Description | Flags
-:---  | :--- | :---
+:---  | :--- | :--- | :---
 *evt* | |
 `instance_name`.evt.timeout | Integer| Activate to ev_timeout
 `instance_name`.evt.clcc_timeout | Integer | Activate to ev_clcc_timeout
@@ -1291,9 +1290,6 @@ Topic | Type | Description
 sys.evt.realtime | String | Add info to ping (not used)
 *other* ||
 `instance_name`.status.`ifname` | String | Publish a json with the status of the vpn.
-### Description
-
-This module opens a [nexus](https://github.com/jaracil/nexus) connection.
 
 ___
 
