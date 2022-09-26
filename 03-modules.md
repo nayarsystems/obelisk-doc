@@ -3070,3 +3070,181 @@ Topic | Type | Description | Flags
 `instance_name`.cmd.tx | String | packages are sent
 
 ____
+
+## MK_BRIDGE
+
+### Description
+Bridge between mk and server
+### Configuration example
+
+    {
+        ... other instances ...
+       "mk_bridge": {
+            "log_level": "debug",
+            "module": "mk_bridge",
+            "autostart": true,
+            "serial_instance": "serial"
+        },  
+        ... other instances ...
+    }
+
+### Specific module parameters
+
+Parameter | Description | Default Value 
+:--- | :--- | :---
+**ip_server** | ip server | ` `
+**port** | port server | ` `
+**serial_instance** | serial instance | `serial`
+**modem_instance** | modem instance | ` modem`
+
+
+
+
+### Pubsub topics
+Topic | Type | Description | Flags
+:---  | :--- | :---| :---
+*evt* | | |
+`instance_name`.evt.stat | Integer | update stat run machine 
+`instance_name`.evt.recv.imei | String | Internal publication of the modem status to obtain IMEI.
+`instance_name_modem`.state | String | Requesting modem status
+`instance_name_modem`.evt.mod.stat | String | Request modem stat
+`instance_name_serial`.evt.recv | String | Receive what the serial publishes
+*cmd* | | |
+`instance_name_serial`.cmd.write | String | It is published what will be written by the serial
+
+
+____
+
+## NEXUS
+
+### Description
+Maintains a connection with nexus and listens for commands
+### Configuration example
+
+    {
+        ... other instances ...
+        "nexus": {
+            "module": "nexus",
+            "proto":"tcp",
+            "server":"localhost",
+            "port": 1717,
+            "user": "test",
+            "pass": "test",
+            "watchdog": 95,
+            "keepalive": 45,
+            "max_respawn_delay": 3,
+            "pullpath": "test.gsr.pubsub"
+        },
+        ... other instances ...
+    }
+
+### Specific module parameters
+
+Parameter | Description | Default Value 
+:--- | :--- | :---
+**proto** | Connection protocol | `ssl`
+**server_addr** | Server address | `127.0.0.1`
+**user** | User | `root`
+**pass** | Password | ` root`
+**pullpath** | Path where the module will do a pull, offering a service of pipe exchange for access to the pubsub | ` test.gsr.pubsub`
+**server_port** | Server port (deprecated)  ` 1717`
+**watchdog** | Time after which the connection is closed if no information is received from the server | ` 95`
+
+### Pubsub topics
+Topic | Type | Description 
+:---  | :--- | :---
+*evt* | | |
+`instance.REQUEST_PATH`| str | Publish request 
+`instance_name`.response.`child->teskid`| str | publish a json with the corresponding information
+`instance_name`.response.firstlogin| str | if login is ok, unsubscribe to path, else stop module
+`instance_name`.response.pipes| str | publish a json with the corresponding information
+*cmd* | | |
+`instance_name`.cmd.request | String | Reply to the post
+____
+
+
+## GSR_LOCALCFG
+
+### Description
+obelisk configuration control module
+### Configuration example
+
+    {
+        ... other instances ...
+        "gsr-localcfg":	{
+            "autostart":	true,
+            "log_level":	"none",
+            "max_respawn_delay":	60,
+            "module":	"gsr-localcfg",
+            "respawn":	true
+        },
+        ... other instances ...
+    }
+
+### Specific module parameters
+
+Parameter | Description | Default Value 
+:--- | :--- | :---
+**-** | - | `-`
+
+
+### Pubsub topics
+Topic | Type | Description 
+:---  | :--- | :---
+*cmd* | | |
+`instance_name`.cmd.swtwm| int | Change working mode. 0 -> Gateway, other -> telealarm and msg->int is car id
+`instance_name`.cmd.settp100 | String | Set new p100 id
+`instance_name`.cmd.setblock | int | if value is one, block : sms, modem, buttons, else active sms, modem,buttons
+sys.cmd.cfg.save | int | seva config
+sys.cmd.reload | int | reload obelisk
+sys.cmd.get.`instance` | int | Get config to instance
+sys.cmd.set.`instance.item` | str | Set config to instance
+sys.cmd.cfg.set.`instance` | str | Set new config to instance
+____
+
+
+## IPBUS
+
+### Description
+Create layer 2 bridge and implements ipbus protocolo
+### Configuration example
+
+    {
+        ... other instances ...
+            "ipbus":{
+                "autostart": true,
+                "module": "ipbus",
+                "uart_dev": "/dev/ttyUSB0",
+                "tap_dev": "ipbus0",
+                "uart_baudrate": 1000000,
+                "ipbus_loop_period": 0.003
+            }
+        ... other instances ...
+    }
+
+### Specific module parameters
+
+Parameter | Description | Default Value 
+:--- | :--- | :---
+**uart_dev** | tty path to use comunication board | ` `
+**tap_dev** | Name of the network interface that will be created | `ipbus0`
+**ipbus_proto_hdm_baudrate** | HDM baudrate | ` 0`
+**ipbus_proto_hdm_preambles** | Number of preambles | ` 3`
+**ipbus_proto_hdm_max_tx_burst** |  | ` 9084`
+**ipbus_proto_hdm_inactive_bus_us** |  | ` 5000`
+**ipbus_read_buffer_len** | Entry buffer size | ` 1024*4`
+**ipbus_max_size** | Max size ipbus frame | ` 1550`
+**ipbus_max_tx_queue_len** | Max size to send frame queue | ` 40`
+**ipbus_loop_period** | Period in ms of the ipbus main loop | ` 0.005`
+
+### Pubsub topics
+Topic | Type | Description 
+:---  | :--- | :---
+*evt* | | |
+`instance_name`.evt.stat| int | change stat and call run_machine
+`instance_name`.evt.bstat| int | change bstat
+`instance_name`.evt.th_result| int | activate event.timeout, set th->result whith msg->int , and call run_machine
+`instance_name`.evt.timeout| int | activate event.timeout, and call run_machine
+
+____
+
