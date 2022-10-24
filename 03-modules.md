@@ -2850,7 +2850,7 @@ ____
 ## TAS
 
 ### Description
-Module that implements a telealarm server (TAS)
+Module that implements a P100 telealarm server (TAS)
 ### Configuration example
 
     {
@@ -3245,3 +3245,60 @@ Create layer 2 bridge and implements ipbus protocolo
 
 ____
 
+## NANO
+
+### Description
+Leitronik nano audio module compatibility
+### Configuration example
+
+    {
+        ... other instances ...
+    "nano":         {
+        "autostart":    	true,
+        "module":       	"nano",
+        "modem":        	"modem",
+        "slic":         	"slic",
+        "car_number":   	1,
+        "pin":				"12345",
+        "required_pin": 	true,
+        "pin_max_retry":	3,
+        "call_max_time":	900,
+        "press_button_time": 3
+    },
+        ... other instances ...
+    }
+
+### Specific module parameters
+
+| Parameter             | Description                                | Default Value |
+| :-------------------- | :----------------------------------------- | :------------ |
+| **modem_instance**    | Modem instance name                        | ` `           |
+| **slic_instance**     | slic instance name                         | ` `           |
+| **press_button_time** | Time in seconds to trigger emergency call  | `3`           |
+| **pin**               | Incoming call pin, if its required         | `12345`       |
+| **required_pin**      | Activate pin required for incomming calls  | `false`       |
+| **call_max_time**     | Max call time duration in seconds          | `900`         |
+| **pin_max_retry**     | Number of retries if pin fails             | `1`           |
+| **auto_test**         | Auto test mode, sends dtmf to disable leds | `false`       |
+
+
+### Pubsub topics
+| Topic                               | Type | Description                                                                           |
+| :---------------------------------- | :--- | :------------------------------------------------------------------------------------ |
+| *evt*                               |      |                                                                                       |
+| `instance_name`.evt.stat            | int  | change stat and call run_machine                                                      |
+| `instance_name_modem`.evt.dtmf      | str  | revived dtmf of module_instance                                                       |
+| `instance_name_slic`.evt.mod.stat   | int  | recive stat of slic_instance                                                          |
+| `instance_name_slic`.evt.dtmf       | str  | revived dtmf of instance_instance                                                     |
+| `instance_name_slic`.evt.pcm        | str  | revived pcm of instance_instance and publish pcm in  `instance_name`.evt.pcm          |
+| *cmd*                               |      |                                                                                       |
+| `instance_name`.cmd.pcmsend         | str  | revived pcm of instance_instance and publish pcm in  `instance_name_slic`.cmd.pcmsend |
+| `instance_name`.cmd.interphone.*    | int  | revived interphone state and publish MN_EV_INCOMING_CALL or  MN_EV_STOP_CALL          |
+| `instance_name`.cmd.failed_alarm    | str  | Publish `fail` in rtopic                                                              |
+| `instance_name`.cmd.end_of_alarm    | str  | Publish `end` in rtopic                                                               |
+| `instance_name`.cmd.call_status     | int  | Set status_ev `1 MN_EV_START_CALL                                                     | 2 MN_EV_ALARM_VALIDATE | 3 MN_EV_STOP_CALL` |
+| `instance_name`.cmd.emerg           | str  | Set rtopic and set ev ->  MN_EV_EMERGENCY_READY                                       |
+| `dtmd_rtopic`                       | str  | Set ev ->  MN_EV_DTMF_CB                                                              |
+| `instance_name`.cmd.autotest        | str  | Set rtopic and set ev ->  MN_EV_TEST                                                  |
+| `instance_name`.cmd.set_test_result | str  | If msg->int_val is 1  publish `C` in `instance_name_slic`.cmd.dtmfsend                |
+____
