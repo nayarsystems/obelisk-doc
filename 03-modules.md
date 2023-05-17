@@ -245,7 +245,8 @@ This module handles a SLIC dahdi device. Sends the appropiate tones for each sta
             "frmsize": 160,
             "lfr1":	-8,
             "lfr2":	-8,
-            "ringtone":	"425/1500,0/3000"
+            "ringtone":	"425/1500,0/3000",
+            "filter": 1
         },
         ... other instances ...
     }
@@ -267,6 +268,7 @@ This module handles a SLIC dahdi device. Sends the appropiate tones for each sta
 | **dtmf_min_gap**   | Minimum gap in milliseconds between a DTMF and the previous one to detect it. | `85`                                          |
 | **dtmf_twist**     | Gain of the high tone (in dBs).                                               | `-1.0`                                        |
 | **dtmf_rtwist**    | Gain of the low tone (in dBs).                                                | `-1.0`                                        |
+| **filter**         | int                                                                           | `1 `                                          | No | Line tone filter |
 
 ### Pubsub topics
 
@@ -3301,4 +3303,3 @@ Leitronik nano audio module compatibility
 | `dtmd_rtopic`                       | str  | Set ev ->  MN_EV_DTMF_CB                                                              |
 | `instance_name`.cmd.autotest        | str  | Set rtopic and set ev ->  MN_EV_TEST                                                  |
 | `instance_name`.cmd.set_test_result | str  | If msg->int_val is 1  publish `C` in `instance_name_slic`.cmd.dtmfsend                |
-____
