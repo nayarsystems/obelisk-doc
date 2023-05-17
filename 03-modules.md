@@ -1658,6 +1658,8 @@ MONITOR FUNCTIONS
 `instance_name`.evt.frequency
 `instance_name`.cmd.monitor.stop:{"tag":"frequency"}
 
+
+
 ### Pubsub topics
 
 | Topic                                                | Type    | Description                                                  | Flags                                |
@@ -2331,6 +2333,8 @@ play sound
 | *period_time* | period_time | `20000`           |
 | *buffer_time* | buffer time | `period_time *10` |
 
+____
+
 
 
 ### Pubsub topics
@@ -2371,6 +2375,10 @@ Play sound
 | **buffer_time** | buffer time | `period_time *4` |
 
 
+____
+
+
+
 
 ### Pubsub topics
 
@@ -2380,6 +2388,8 @@ Play sound
 | `instance_name`.evt.pcm | Buffer | Publish to buffer | MSG_FL_INSTANT / MSG_FL_NONRECURSIVE |
 
 ___
+
+
 ## ALSAPLAY (Deprecated)
 
 ### Description
@@ -2695,8 +2705,11 @@ Module in charge of transforming real time data and sending them by mqtt.
 | **refresh_period** | refresh period  | `600`         |
 | **tz**             | tz              | `CST-8`       |
 
+____
+
 
 ### Pubsub topics
+
 | Topic                                                | Type    | Description                                                                             | Flags |
 | :--------------------------------------------------- | :------ | :-------------------------------------------------------------------------------------- | :---- |
 | *evt*                                                |         |                                                                                         |
@@ -2705,6 +2718,7 @@ Module in charge of transforming real time data and sending them by mqtt.
 | `instance_name`.status.refresh.`instance_name_smart` | String  | a json is received and the cabin status is sent                                         |
 | *cmd*                                                |         |                                                                                         |
 | `instance_name_mqtt`cmd.pub                          | String  | Publish Json                                                                            |
+
 ___
 
 
@@ -2735,6 +2749,8 @@ Module in charge of transforming real time data and sending them by mqtt.
 | *direction*     | pin direcction in or out | ` in`         |
 | *initial_value* | default value            | `0`           |
 | *debounce*      | time of repeat           | `0.01`        |
+
+____
 
 
 ### Pubsub topics
@@ -2855,6 +2871,7 @@ MQTT client module acting as a bridge between internal pubsub and MQTT protocol 
 | **last_will_qos**    | last_will_qos     | `0`               |
 | **last_will_retain** | last_will_retain  | `false`           |
 
+____
 
 
 ### Pubsub topics
@@ -2905,6 +2922,7 @@ Module that implements a P100 telealarm server (TAS)
 | **modem_pcm_gain** | pcm again    | ` 0`          |
 | **protocol**       | protocol use | ` p100`       |
 
+____
 
 
 
@@ -2967,6 +2985,7 @@ Manages TCP connection
 | *timeout*         | TCP connection timeout                  | ` 600`        |
 | *whitelist*       | Subnet list permit                      | ` 127.0.0.1`  |
 
+____
 
 
 ### Pubsub topics
@@ -3015,6 +3034,7 @@ EPCL is responsible for measuring the kinetic energy recovery system
 | *hist_solar_current*       | Solar charger current threshold publish value (0.1A/1). | ` 5`          |
 | *epcl_id*                  | epcl id (0...15)                                        | `0`           |
 
+____
 
 
 ### Pubsub topics
@@ -3073,9 +3093,11 @@ EPCL is responsible for measuring the kinetic energy recovery system
 | *daytime_hour_start*          | Daytime start time in 24h format             | ` 6`          |
 | *daytime_hour_end*            | Daytime start time in 24h format             | ` 22`         |
 
+____
 
 
 ### Pubsub topics
+
 | Topic                                                     | Type    | Description                                                                            | Flags         |
 | :-------------------------------------------------------- | :------ | :------------------------------------------------------------------------------------- | :------------ |
 | *evt*                                                     |         |                                                                                        |
@@ -3179,6 +3201,8 @@ Maintains a connection with nexus and listens for commands
 | *server_port* | Server port (deprecated)  ` 1717`                                                                  |
 | *watchdog*    | Time after which the connection is closed if no information is received from the server            | ` 95`              |
 
+____
+
 
 ### Pubsub topics
 
@@ -3266,6 +3290,9 @@ Create layer 2 bridge and implements ipbus protocolo
 | *ipbus_max_tx_queue_len*          | Max size to send frame queue                       | ` 40`         |
 | *ipbus_loop_period*               | Period in ms of the ipbus main loop                | ` 0.005`      |
 
+____
+
+
 ### Pubsub topics
 
 | Topic                         | Type | Description                                                                  |
@@ -3335,3 +3362,5 @@ Leitronik nano audio module compatibility
 | `dtmd_rtopic`                       | str  | Set ev ->  MN_EV_DTMF_CB                                                              |
 | `instance_name`.cmd.autotest        | str  | Set rtopic and set ev ->  MN_EV_TEST                                                  |
 | `instance_name`.cmd.set_test_result | str  | If msg->int_val is 1  publish `C` in `instance_name_slic`.cmd.dtmfsend                |
+
+____
