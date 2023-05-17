@@ -268,7 +268,7 @@ This module handles a SLIC dahdi device. Sends the appropiate tones for each sta
 | **dtmf_min_gap**   | Minimum gap in milliseconds between a DTMF and the previous one to detect it. | `85`                                          |
 | **dtmf_twist**     | Gain of the high tone (in dBs).                                               | `-1.0`                                        |
 | **dtmf_rtwist**    | Gain of the low tone (in dBs).                                                | `-1.0`                                        |
-| **filter**         | int                                                                           | `1 `                                          | No | Line tone filter |
+| **filter**         | int                                                                           | `1 `                                          |
 
 ### Pubsub topics
 
@@ -786,17 +786,20 @@ This module collects information (the current state of the system and of each in
 
 ### Specific module parameters
 
+
 | Parameter             | Description                                                                                                                            | Default Value           |
 | :-------------------- | :------------------------------------------------------------------------------------------------------------------------------------- | :---------------------- |
 | **timeout**           | Time in seconds to wait after starting the instance to start trying to send the report. This allows for the other instances to start.  | `10`                    |
 | **iface**             | Network interface to extract the MAC to include in the report.                                                                         | `"eth0"`                |
 | **posturl**           | Address to send the POST with the report.                                                                                              | `"http://localhost:80"` |
 | **max_retry_timeout** | Maximum time in seconds to wait between tries to send the report (it increases linearly at a reason of 10 seconds until this maximum). | `3600`                  |
+
+
 ### Pubsub topics
 
 | Topic                        | Type   | Description                          |
 | :--------------------------- | :----- | :----------------------------------- |
-| *cmd*                        |        |
+| *cmd*                        |        |                                      |
 | `instance_name`.cmd.generate | String | Send a report of all system modules. |
 ___
 
@@ -856,6 +859,8 @@ If after a time determined by `panic_timeout` no ping has been achieved by any i
 | **head_path**       | Command to execute for the head utility.                                                             | `"head"`                        |
 | **panic_tout**      | Time in seconds without ping to execute the panic command.                                           | `900`                           |
 | **panic_cmd**       | Command to execute when the panic timeout expires (none if left empty).                              | `"reboot"`                      |
+
+
 ### Pubsub topics
 
 | Topic                              | Type    | Description                                      |
@@ -868,7 +873,7 @@ If after a time determined by `panic_timeout` no ping has been achieved by any i
 | `instance_name`.evt.timeout        | String  | Ping response timed out                          |
 | `instance_name_exec`.evt.mod.stat  | String  | Exec module has changed state                    |
 | `instance_name_n4m`.evt.secure     | Integer | safe_n4m mode is activated                       |
-| *cmd*                              |         |
+| *cmd*                              |         |                                                  |
 | `instance_name`.cmd.check_now      | String  | Connectivity is verified.                        |
 
 
@@ -1106,6 +1111,7 @@ This module is responsible of periodically checking the battery status, publishi
 | **alert_level** | *(only for `v`)* Limit value to generate the alert state.                                                             |
 | **alert_safe**  | *(only for `v`)* Limit value to generate the alert recovery state.                                                    |
 | **alert_max**   | *(only for `t`)* Limit value to generate the alert state.                                                             |
+
 ### Pubsub topics
 
 | Topic                          | Type   | Description                                              | Flags |
@@ -1123,6 +1129,7 @@ This module is responsible of periodically checking the battery status, publishi
 | sys.alert.`instance_name`      | String | Publish alert json                                       |
 
 ___
+
 ## Max17048  
 
 ### Description
@@ -1366,6 +1373,7 @@ The timeout parameter is used when all the methods configured to notify the aler
 | **url_post**   | Address to send the alert through POST. Not sent by POST if empty.                                                    | `""`          |
 | **timeout**    | Time in seconds to wait between tries to send the alert. It increments exponentially.                                 | `3600`        |
 | **max_ttl**    | Maximum life time in seconds for the alert, when this time expires and the alert has not been notified, it's deleted. | `86400`       |
+
 ### Pubsub topics
 
 | Topic                         | Type    | Description                                                   |
@@ -1436,18 +1444,22 @@ This `actions` parameter is an array of json objects, each with three keys: topi
 | **keypress_min_secs** | Minimum number of seconds with the button pressed to execute the actions. | `0`           |
 | **keypress_min_secs** | Maximum number of seconds with the button pressed to execute the actions. | `60`          |
 | **actions**           | JSON string with a list of the actions as defined in the description.     | `"[]"`        |
+
 ### Pubsub topics
 
 | Topic                               | Type                  | Description                                          | FlaGS          |
 | :---------------------------------- | :-------------------- | :--------------------------------------------------- | :------------- |
-| *evt*                               |                       |                                                      |
-| `instance_name_evdev`.evt.mod.stat  | Integer               | Set new stat                                         |
+| *evt*                               |                       |                                                      |                |
+| `instance_name_evdev`.evt.mod.stat  | Integer               | Set new stat                                         |                |
 | `instance_name_evdev`.qstat         | Integer               | Publish qstat value                                  | MSG_FL_INSTANT |
-| `instance_name`.evt.btn.`type.code` | Integer               | Publish type & code (not used)                       |
-| `action_topic`                      | Integer/Double/String | Post a value depending on the type of action (i,f,s) |
-| *sys*                               |                       |
-| sys.evdev.`type.code`               | String                | Publish the information on evt.btn                   |
+| `instance_name`.evt.btn.`type.code` | Integer               | Publish type & code (not used)                       |                |
+| `action_topic`                      | Integer/Double/String | Post a value depending on the type of action (i,f,s) |                |
+| *sys*                               |                       |                                                      |                |
+| sys.evdev.`type.code`               | String                | Publish the information on evt.btn                   |                |
+
 ___
+
+
 
 ## Gsrleds
 
@@ -1650,22 +1662,23 @@ MONITOR FUNCTIONS
 
 | Topic                                                | Type    | Description                                                  | Flags                                |
 | :--------------------------------------------------- | :------ | :----------------------------------------------------------- | :----------------------------------- |
-| *cmd*                                                |         |                                                              |
-| `instance_name`.cmd.read.coils                       | String  | Depending on the json read one addr or another               |
-| `instance_name`.cmd.read.discrete_input              | String  | Depending on the json read one addr or another               |
-| `instance_name`.cmd.read.holding_registers           | String  | Depending on the json read one addr or another               |
-| `instance_name`.cmd.read.input_registers             | String  | Depending on the json read one addr or another               |
-| `instance_name`.cmd.write.single_coil                | String  | Depending on the json write one addr or another              |
-| `instance_name`.cmd.write.single_holding_register    | String  | Depending on the json write one addr or another              |
-| `instance_name`.cmd.write.multiple_coils             | String  | Depending on the json write one addr or another              |
-| `instance_name`.cmd.write.multiple_holding_registers | String  | Depending on the json write one addr or another              |
-| `instance_name`.cmd.monitor.coils                    | String  | Depending on the json it monitors one addr or another        |
-| `instance_name`.cmd.monitor.stop                     | String  | Del event                                                    |
-| `instance_name`.cmd.monitor.holding_registers        | String  | Depending on the json it monitors one addr or another        |
+| *cmd*                                                |         |                                                              |                                      |
+| `instance_name`.cmd.read.coils                       | String  | Depending on the json read one addr or another               |                                      |
+| `instance_name`.cmd.read.discrete_input              | String  | Depending on the json read one addr or another               |                                      |
+| `instance_name`.cmd.read.holding_registers           | String  | Depending on the json read one addr or another               |                                      |
+| `instance_name`.cmd.read.input_registers             | String  | Depending on the json read one addr or another               |                                      |
+| `instance_name`.cmd.write.single_coil                | String  | Depending on the json write one addr or another              |                                      |
+| `instance_name`.cmd.write.single_holding_register    | String  | Depending on the json write one addr or another              |                                      |
+| `instance_name`.cmd.write.multiple_coils             | String  | Depending on the json write one addr or another              |                                      |
+| `instance_name`.cmd.write.multiple_holding_registers | String  | Depending on the json write one addr or another              |                                      |
+| `instance_name`.cmd.monitor.coils                    | String  | Depending on the json it monitors one addr or another        |                                      |
+| `instance_name`.cmd.monitor.stop                     | String  | Del event                                                    |                                      |
+| `instance_name`.cmd.monitor.holding_registers        | String  | Depending on the json it monitors one addr or another        |                                      |
 | `instance_name_serial`.cmd.write.                    | Buffer  | Publish sent to buffer                                       | MSG_FL_INSTANT / MSG_FL_NONRECURSIVE |
-| *evt*                                                |         |
-| `instance_name_serial`.evt.recv                      | Buffer  | Read buffer and post frame in `modbus_frame`.evt.recv.frame. |
-| `instance_name_serial`.evt.mod.stat                  | Integer | Modify state                                                 |
+| *evt*                                                |         |                                                              |                                      |
+| `instance_name_serial`.evt.recv                      | Buffer  | Read buffer and post frame in `modbus_frame`.evt.recv.frame. |                                      |
+| `instance_name_serial`.evt.mod.stat                  | Integer | Modify state                                                 |                                      |
+
 ___
 
 
@@ -1712,6 +1725,7 @@ This module is reponsible of sending events from GSR to URL entrypoing. The data
 | **topic**             | Obelisk topic to subscribe and monitor it's values                                  | `-`           |
 | **info_str**          | Extra data for the entrypoing.                                                      | `-`           |
 | **notify_event_path** | Path to send a notification that an event was sent.                                 | `-`           |
+
 ### Pubsub topics
 
 | Topic                     | Type   | Description                    |
@@ -1767,6 +1781,7 @@ This module is reponsible for monitoring states of other modules.
 | `instance_name_monitor`.evt.mod.stat | Integer | Publish to evt.publish.instance depending on the parameter received                                   |
 | *cmd*                                |         |
 | sys.cmd.reload                       | String  | Ask for the config again on system reloads                                                            |
+
 ___
 
 
@@ -1822,6 +1837,7 @@ The P100 protocol is a standard DTMF data communication protocol implemented by 
 | `instance_name`.cmd.autotest                               | Integer | Make a test call                                    |
 | `instance_name`.cmd.failure                                | Integer | Set failure and set stat to MP100_WAITING_INIT_TONE |
 | `instance_name`.cmd.cancel                                 | String  | Set stat to  MP100_WAITING_START                    |
+
 ___
 
 ## SIP
@@ -1910,14 +1926,13 @@ The SIP client is to be able to make emergency calls using only data.
 | `instance_name_audiogen`.evt.stopped.`instance_name` | String  | Set stat to  MP100_WAITING_START |
 | `instance_name`.evt.pcm.`instance_name`              | Buffer  | Publish send to buffer           | MSG_FL_NONRECURSIVE |
 | `instance_name`.evt.needpcm.`instance_name`          | Integer | Publish send to size buffer      | MSG_FL_NONRECURSIVE |
-
-*cmd* | | |
-`instance_name`.cmd.dial | String | Do call
-`instance_name`.cmd.hangup | Integer | Hang up call
-`instance_name`.cmd.dtmfsend | Integer | dtmfd is sent
-`instance_name`.cmd.qbstat | Integer | Publish syayus in *evt.bstat*
-`instance_name`.cmd.pcmsend | Buffer | Publish send to size buffer
-`instance_name`.cmd.stop | String | stop mudule
+| *cmd*                                                |         |                                  |
+| `instance_name`.cmd.dial                             | String  | Do call                          |
+| `instance_name`.cmd.hangup                           | Integer | Hang up call                     |
+| `instance_name`.cmd.dtmfsend                         | Integer | dtmfd is sent                    |
+| `instance_name`.cmd.qbstat                           | Integer | Publish syayus in *evt.bstat*    |
+| `instance_name`.cmd.pcmsend                          | Buffer  | Publish send to size buffer      |
+| `instance_name`.cmd.stop                             | String  | stop mudule                      |
 
 ___
 
@@ -1970,6 +1985,7 @@ This is the module that handles all the devices from the Smart Control Platform.
 | `instance_name`.cmd.telecontrol.activate | Integer          | If the value is greater than 0, the remote control is activated, if not, it is turned off. |
 | `instance_name`.cmd.telecontrol.keypress | Integer / Buffer | Sends a keypress for telecontrol                                                           |
 | `instance_name`.cmd.telemetry.status     | Integer          | stores the state                                                                           |
+
 ___
 
 ## TRIGGER
@@ -2309,11 +2325,11 @@ play sound
 
 ### Specific module parameters
 
-| Parameter       | Description | Default Value     |
-| :-------------- | :---------- | :---------------- |
-| **alsadev**     | alsa device | `plughw:0,0`      |
-| **period_time** | period_time | `20000`           |
-| **buffer_time** | buffer time | `period_time *10` |
+| Parameter     | Description | Default Value     |
+| :------------ | :---------- | :---------------- |
+| *alsadev**    | alsa device | `plughw:0,0`      |
+| *period_time* | period_time | `20000`           |
+| *buffer_time* | buffer time | `period_time *10` |
 
 
 
@@ -2426,7 +2442,7 @@ Play sound
 | Parameter   | Description | Default Value |
 | :---------- | :---------- | :------------ |
 | **alsadev** | alsa device | `plughw:0,0`  |
-**perio
+
 ## ALSAPLAY (Deprecated)
 
 ### Description
@@ -2504,14 +2520,15 @@ mod_amber is used to receive frames from meters compatible with wM-BUS.
 
 
 ### Pubsub topics
+
 | Topic                        | Type    | Description                                      | Flags                                |
 | :--------------------------- | :------ | :----------------------------------------------- | :----------------------------------- |
-| *evt*                        |         |                                                  |
-| `instance_name`.evt.stat     | Integer | Publish stat                                     |
-| `instance_name`.evt.bstat    | Integer | Publish amber stat                               |
+| *evt*                        |         |                                                  |                                      |
+| `instance_name`.evt.stat     | Integer | Publish stat                                     |                                      |
+| `instance_name`.evt.bstat    | Integer | Publish amber stat                               |                                      |
 | `instance_name`.evt.recv     | Buffer  | Publish command frame received from amber device | MSG_FL_INSTANT / MSG_FL_NONRECURSIVE |
 | `instance_name`.evt.recv.raw | Buffer  | Publish raw                                      | MSG_FL_INSTANT / MSG_FL_NONRECURSIVE |
-| `instance_name`.evt.json     | Buffer  | Publish  json frame                              |
+| `instance_name`.evt.json     | Buffer  | Publish  json frame                              |                                      |
 | `instance_name`.evt.timeout  | Integer | Publish  timeout                                 | MSG_FL_INSTANT                       |
 
 ___
@@ -2549,6 +2566,7 @@ module that is responsible for making a retransmission of the topics that have b
 
 
 ### Pubsub topics
+
 | Topic                                              | Type   | Description                                                                            | Flags                                |
 | :------------------------------------------------- | :----- | :------------------------------------------------------------------------------------- | :----------------------------------- |
 | *evt*                                              |        |                                                                                        |
@@ -2598,6 +2616,7 @@ ___
 
 
 ### Pubsub topics
+
 | Topic                              | Type   | Description                                                                                    | Flags |
 | :--------------------------------- | :----- | :--------------------------------------------------------------------------------------------- | :---- |
 | *evt*                              |        |                                                                                                |
@@ -2641,6 +2660,7 @@ Module to communicate with edel maneuvers
 
 
 ### Pubsub topics
+
 | Topic                       | Type   | Description                                                                                                                                       | Flags |
 | :-------------------------- | :----- | :------------------------------------------------------------------------------------------------------------------------------------------------ | :---- |
 | `instance_name_serial`.recv | Buffer | rreceives a buffer, analyzes the information and publishes a json in sys.alert.`instance_name` with the information received plant and error code |
@@ -2709,15 +2729,16 @@ Module in charge of transforming real time data and sending them by mqtt.
 
 ### Specific module parameters
 
-| Parameter         | Description              | Default Value |
-| :---------------- | :----------------------- | :------------ |
-| **pin**           | pin id                   | ` -1`         |
-| **direction**     | pin direcction in or out | ` in`         |
-| **initial_value** | default value            | `0`           |
-| **debounce**      | time of repeat           | `0.01`        |
+| Parameter       | Description              | Default Value |
+| :-------------- | :----------------------- | :------------ |
+| *pin*           | pin id                   | ` -1`         |
+| *direction*     | pin direcction in or out | ` in`         |
+| *initial_value* | default value            | `0`           |
+| *debounce*      | time of repeat           | `0.01`        |
 
 
 ### Pubsub topics
+
 | Topic                              | Type    | Description                                            | Flags          |
 | :--------------------------------- | :------ | :----------------------------------------------------- | :------------- |
 | *evt*                              |         |                                                        |
@@ -2754,6 +2775,7 @@ module in charge of loading the local configuration of the gsr
 | **max_respawn_delay** | max_respawn_delay | ` 60`         |
 
 ### Pubsub topics
+
 | Topic                                     | Type    | Description                                                                                                                                             | Flags          |
 | :---------------------------------------- | :------ | :------------------------------------------------------------------------------------------------------------------------------------------------------ | :------------- |
 | `topic`                                   | All     | Clone msg                                                                                                                                               |
@@ -2763,6 +2785,7 @@ module in charge of loading the local configuration of the gsr
 | `instance_name`.cmd.setblock              | Integer | edit config, if value is 1  turn off modules (sms, modem, button_config,button_factory) else turn on modules (sms, modem, button_config,button_factory) |
 | sys.cmd.cfg.set.`instance_name.item_name` | String  | Publish json                                                                                                                                            | MSG_FL_INSTANT |
 | sys.cmd.reload                            | Integer | Ask for the config again on system reloads                                                                                                              |
+
 ___
 
 
@@ -2835,6 +2858,7 @@ MQTT client module acting as a bridge between internal pubsub and MQTT protocol 
 
 
 ### Pubsub topics
+
 | Topic                             | Type    | Description                | Flags                         |
 | :-------------------------------- | :------ | :------------------------- | :---------------------------- |
 | *cmd*                             |         |                            |
@@ -2885,6 +2909,7 @@ Module that implements a P100 telealarm server (TAS)
 
 
 ### Pubsub topics
+
 | Topic                                 | Type    | Description                                   | Flags                    |
 | :------------------------------------ | :------ | :-------------------------------------------- | :----------------------- |
 | *evt*                                 |         |                                               |
@@ -2930,21 +2955,22 @@ Manages TCP connection
 
 ### Specific module parameters
 
-| Parameter           | Description                             | Default Value |
-| :------------------ | :-------------------------------------- | :------------ |
-| **port**            | port for socket connection              | ` 52101`      |
-| **ip_server**       | Ip for socket connection                | ` 127.0.0.1`  |
-| **size_buffer**     | Size of the frames that we will receive | ` 8192`       |
-| **write_topic**     | Topic to write frames                   | ` p100`       |
-| **read_topic**      | Topic to read frames                    | ` p100`       |
-| **bridge**          | Activate tcp-bridge mode                | ` false`      |
-| **accept_new_conn** | Accept new tcp conection                | ` false`      |
-| **timeout**         | TCP connection timeout                  | ` 600`        |
-| **whitelist**       | Subnet list permit                      | ` 127.0.0.1`  |
+| Parameter         | Description                             | Default Value |
+| :---------------- | :-------------------------------------- | :------------ |
+| *port*            | port for socket connection              | ` 52101`      |
+| *ip_server*       | Ip for socket connection                | ` 127.0.0.1`  |
+| *size_buffer*     | Size of the frames that we will receive | ` 8192`       |
+| *write_topic*     | Topic to write frames                   | ` p100`       |
+| *read_topic*      | Topic to read frames                    | ` p100`       |
+| *bridge*          | Activate tcp-bridge mode                | ` false`      |
+| *accept_new_conn* | Accept new tcp conection                | ` false`      |
+| *timeout*         | TCP connection timeout                  | ` 600`        |
+| *whitelist*       | Subnet list permit                      | ` 127.0.0.1`  |
 
 
 
 ### Pubsub topics
+
 | Topic                     | Type   | Description                        | Flags                                |
 | :------------------------ | :----- | :--------------------------------- | :----------------------------------- |
 | *evt*                     |        |                                    |
@@ -2953,6 +2979,7 @@ Manages TCP connection
 | *cmd*                     |        |                                    |
 | `instance_name`.cmd.write | Buffer | Send the buffer by tcp             |
 | `read_topic`              | Buffer | Send the buffer by tcp             |
+
 ____
 
 
@@ -2976,21 +3003,22 @@ EPCL is responsible for measuring the kinetic energy recovery system
 
 ### Specific module parameters
 
-| Parameter                    | Description                                             | Default Value |
-| :--------------------------- | :------------------------------------------------------ | :------------ |
-| **hist_battery_voltage**     | battery voltage threshold publish value (0.1V/1)        | ` 5`          |
-| **hist_battery_current**     | battery current threshold publish value (1A/1)          | `5`           |
-| **hist_dc_power**            | DC link power threshold publish value (1W/1)            | ` 20`         |
-| **hist_dc_voltage**          | DC link current threshold publish value (0.1A/1)        | ` 30`         |
-| **hist_dc_current**          | Topic to read frames                                    | ` 5`          |
-| **hist_ac_charger_current**  | AC charger current threshold publish value (0.1A/1).    | ` 5`          |
-| **hist_ac_inverter_current** | AC inverter current threshold publish value (0.1A/1).   | ` 5`          |
-| **hist_solar_current**       | Solar charger current threshold publish value (0.1A/1). | ` 5`          |
-| **epcl_id**                  | epcl id (0...15)                                        | `0`           |
+| Parameter                  | Description                                             | Default Value |
+| :------------------------- | :------------------------------------------------------ | :------------ |
+| *hist_battery_voltage*     | battery voltage threshold publish value (0.1V/1)        | ` 5`          |
+| *hist_battery_current*     | battery current threshold publish value (1A/1)          | `5`           |
+| *hist_dc_power**           | DC link power threshold publish value (1W/1)            | ` 20`         |
+| *hist_dc_voltage*          | DC link current threshold publish value (0.1A/1)        | ` 30`         |
+| *hist_dc_current*          | Topic to read frames                                    | ` 5`          |
+| *hist_ac_charger_current*  | AC charger current threshold publish value (0.1A/1).    | ` 5`          |
+| *hist_ac_inverter_current* | AC inverter current threshold publish value (0.1A/1).   | ` 5`          |
+| *hist_solar_current*       | Solar charger current threshold publish value (0.1A/1). | ` 5`          |
+| *epcl_id*                  | epcl id (0...15)                                        | `0`           |
 
 
 
 ### Pubsub topics
+
 | Topic                                          | Type    | Description                                                                                 | Flags |
 | :--------------------------------------------- | :------ | :------------------------------------------------------------------------------------------ | :---- |
 | *evt*                                          |         |                                                                                             |
@@ -3004,6 +3032,7 @@ EPCL is responsible for measuring the kinetic energy recovery system
 | `instance_name`.cmd.telemtery.activate         | Integer | if value is 1 telemetry activate, else telemtry disable                                     |
 | `instance_name`.cmd.info                       | Buffer  | information is requested through a publication can.cmd.frame                                |
 | `instance_name`.cmd.telemtery.status           | Buffer  | publish `instance_name`.cmd.info with value 0, and `instance_name`.cmd.control with value 1 |
+
 ____
 
 
@@ -3027,22 +3056,22 @@ EPCL is responsible for measuring the kinetic energy recovery system
 
 ### Specific module parameters
 
-| Parameter                       | Description                                  | Default Value |
-| :------------------------------ | :------------------------------------------- | :------------ |
-| **filter_audio_path**           | audio file path                              | ` `           |
-| **filter_countdown_audio_path** | audio file path                              | ` `           |
-| **ring_audio_path**             | Ring audio file path                         | ` `           |
-| **car_number**                  | Cabin number to use                          | ` -1`         |
-| **soc_alert**                   | Percentage to trigger the low battery alert  | ` 25`         |
-| **soc_alert_error**             | Percentage to trigger the battery error aler | ` 10`         |
-| **max_vbat**                    | Maximum battery voltage in mV                | ` 4100`       |
-| **min_vbat**                    | Minimum battery voltage in mV                | ` 3200`       |
-| **mic_volume**                  | Microphone volume                            | ` 5`          |
-| **speaker_volume**              | Cabin speaker volume                         | ` 5`          |
-| **leds_mode_minimum**           | Configure minimal mode for LEDs              | ` false`      |
-| **daytime_speech_volume**       | Voice synthesis volume during daytime        | ` 5`          |
-| **daytime_hour_start**          | Daytime start time in 24h format             | ` 6`          |
-| **daytime_hour_end**            | Daytime start time in 24h format             | ` 22`         |
+| Parameter                     | Description                                  | Default Value |
+| :---------------------------- | :------------------------------------------- | :------------ |
+| *filter_audio_path*           | audio file path                              | ` `           |
+| *filter_countdown_audio_path* | audio file path                              | ` `           |
+| *ring_audio_path*             | Ring audio file path                         | ` `           |
+| *car_number*                  | Cabin number to use                          | ` -1`         |
+| *soc_alert*                   | Percentage to trigger the low battery alert  | ` 25`         |
+| *soc_alert_error*             | Percentage to trigger the battery error aler | ` 10`         |
+| *max_vbat*                    | Maximum battery voltage in mV                | ` 4100`       |
+| *min_vbat*                    | Minimum battery voltage in mV                | ` 3200`       |
+| *mic_volume*                  | Microphone volume                            | ` 5`          |
+| *speaker_volume*              | Cabin speaker volume                         | ` 5`          |
+| *leds_mode_minimum*           | Configure minimal mode for LEDs              | ` false`      |
+| *daytime_speech_volume*       | Voice synthesis volume during daytime        | ` 5`          |
+| *daytime_hour_start*          | Daytime start time in 24h format             | ` 6`          |
+| *daytime_hour_end*            | Daytime start time in 24h format             | ` 22`         |
 
 
 
@@ -3089,17 +3118,18 @@ Bridge between mk and server
 
 ### Specific module parameters
 
-| Parameter           | Description     | Default Value |
-| :------------------ | :-------------- | :------------ |
-| **ip_server**       | ip server       | ` `           |
-| **port**            | port server     | ` `           |
-| **serial_instance** | serial instance | `serial`      |
-| **modem_instance**  | modem instance  | ` modem`      |
+| Parameter         | Description     | Default Value |
+| :---------------- | :-------------- | :------------ |
+| *ip_server*       | ip server       | ` `           |
+| *port*            | port server     | ` `           |
+| *serial_instance* | serial instance | `serial`      |
+| *modem_instance*  | modem instance  | ` modem`      |
 
 
 
 
 ### Pubsub topics
+
 | Topic                              | Type    | Description                                              | Flags |
 | :--------------------------------- | :------ | :------------------------------------------------------- | :---- |
 | *evt*                              |         |                                                          |
@@ -3139,17 +3169,19 @@ Maintains a connection with nexus and listens for commands
 
 ### Specific module parameters
 
-| Parameter       | Description                                                                                        | Default Value      |
-| :-------------- | :------------------------------------------------------------------------------------------------- | :----------------- |
-| **proto**       | Connection protocol                                                                                | `ssl`              |
-| **server_addr** | Server address                                                                                     | `127.0.0.1`        |
-| **user**        | User                                                                                               | `root`             |
-| **pass**        | Password                                                                                           | ` root`            |
-| **pullpath**    | Path where the module will do a pull, offering a service of pipe exchange for access to the pubsub | ` test.gsr.pubsub` |
-| **server_port** | Server port (deprecated)  ` 1717`                                                                  |
-| **watchdog**    | Time after which the connection is closed if no information is received from the server            | ` 95`              |
+| Parameter     | Description                                                                                        | Default Value      |
+| :------------ | :------------------------------------------------------------------------------------------------- | :----------------- |
+| *proto*       | Connection protocol                                                                                | `ssl`              |
+| *server_addr* | Server address                                                                                     | `127.0.0.1`        |
+| *user*        | User                                                                                               | `root`             |
+| *pass*        | Password                                                                                           | ` root`            |
+| *pullpath*    | Path where the module will do a pull, offering a service of pipe exchange for access to the pubsub | ` test.gsr.pubsub` |
+| *server_port* | Server port (deprecated)  ` 1717`                                                                  |
+| *watchdog*    | Time after which the connection is closed if no information is received from the server            | ` 95`              |
+
 
 ### Pubsub topics
+
 | Topic                                    | Type   | Description                                           |
 | :--------------------------------------- | :----- | :---------------------------------------------------- |
 | *evt*                                    |        |                                                       |
@@ -3159,6 +3191,7 @@ Maintains a connection with nexus and listens for commands
 | `instance_name`.response.pipes           | str    | publish a json with the corresponding information     |
 | *cmd*                                    |        |                                                       |
 | `instance_name`.cmd.request              | String | Reply to the post                                     |
+
 ____
 
 
@@ -3180,14 +3213,10 @@ obelisk configuration control module
         ... other instances ...
     }
 
-### Specific module parameters
-
-| Parameter | Description | Default Value |
-| :-------- | :---------- | :------------ |
-| **-**     | -           | `-`           |
 
 
 ### Pubsub topics
+
 | Topic                        | Type   | Description                                                                  |
 | :--------------------------- | :----- | :--------------------------------------------------------------------------- |
 | *cmd*                        |        |                                                                              |
@@ -3199,6 +3228,7 @@ obelisk configuration control module
 | sys.cmd.get.`instance`       | int    | Get config to instance                                                       |
 | sys.cmd.set.`instance.item`  | str    | Set config to instance                                                       |
 | sys.cmd.cfg.set.`instance`   | str    | Set new config to instance                                                   |
+
 ____
 
 
@@ -3223,20 +3253,21 @@ Create layer 2 bridge and implements ipbus protocolo
 
 ### Specific module parameters
 
-| Parameter                           | Description                                        | Default Value |
-| :---------------------------------- | :------------------------------------------------- | :------------ |
-| **uart_dev**                        | tty path to use comunication board                 | ` `           |
-| **tap_dev**                         | Name of the network interface that will be created | `ipbus0`      |
-| **ipbus_proto_hdm_baudrate**        | HDM baudrate                                       | ` 0`          |
-| **ipbus_proto_hdm_preambles**       | Number of preambles                                | ` 3`          |
-| **ipbus_proto_hdm_max_tx_burst**    |                                                    | ` 9084`       |
-| **ipbus_proto_hdm_inactive_bus_us** |                                                    | ` 5000`       |
-| **ipbus_read_buffer_len**           | Entry buffer size                                  | ` 1024*4`     |
-| **ipbus_max_size**                  | Max size ipbus frame                               | ` 1550`       |
-| **ipbus_max_tx_queue_len**          | Max size to send frame queue                       | ` 40`         |
-| **ipbus_loop_period**               | Period in ms of the ipbus main loop                | ` 0.005`      |
+| Parameter                         | Description                                        | Default Value |
+| :-------------------------------- | :------------------------------------------------- | :------------ |
+| *uart_dev*                        | tty path to use comunication board                 | ` `           |
+| *tap_dev*                         | Name of the network interface that will be created | `ipbus0`      |
+| *ipbus_proto_hdm_baudrate*        | HDM baudrate                                       | ` 0`          |
+| *ipbus_proto_hdm_preambles*       | Number of preambles                                | ` 3`          |
+| *ipbus_proto_hdm_max_tx_burst*    |                                                    | ` 9084`       |
+| *ipbus_proto_hdm_inactive_bus_us* |                                                    | ` 5000`       |
+| *ipbus_read_buffer_len*           | Entry buffer size                                  | ` 1024*4`     |
+| *ipbus_max_size*                  | Max size ipbus frame                               | ` 1550`       |
+| *ipbus_max_tx_queue_len*          | Max size to send frame queue                       | ` 40`         |
+| *ipbus_loop_period*               | Period in ms of the ipbus main loop                | ` 0.005`      |
 
 ### Pubsub topics
+
 | Topic                         | Type | Description                                                                  |
 | :---------------------------- | :--- | :--------------------------------------------------------------------------- |
 | *evt*                         |      |                                                                              |
@@ -3272,19 +3303,20 @@ Leitronik nano audio module compatibility
 
 ### Specific module parameters
 
-| Parameter             | Description                                | Default Value |
-| :-------------------- | :----------------------------------------- | :------------ |
-| **modem_instance**    | Modem instance name                        | ` `           |
-| **slic_instance**     | slic instance name                         | ` `           |
-| **press_button_time** | Time in seconds to trigger emergency call  | `3`           |
-| **pin**               | Incoming call pin, if its required         | `12345`       |
-| **required_pin**      | Activate pin required for incomming calls  | `false`       |
-| **call_max_time**     | Max call time duration in seconds          | `900`         |
-| **pin_max_retry**     | Number of retries if pin fails             | `1`           |
-| **auto_test**         | Auto test mode, sends dtmf to disable leds | `false`       |
+| Parameter           | Description                                | Default Value |
+| :------------------ | :----------------------------------------- | :------------ |
+| *modem_instance*    | Modem instance name                        | ` `           |
+| *slic_instance*     | slic instance name                         | ` `           |
+| *press_button_time* | Time in seconds to trigger emergency call  | `3`           |
+| *pin*               | Incoming call pin, if its required         | `12345`       |
+| *required_pin*      | Activate pin required for incomming calls  | `false`       |
+| *call_max_time*     | Max call time duration in seconds          | `900`         |
+| *pin_max_retry*     | Number of retries if pin fails             | `1`           |
+| *auto_test*         | Auto test mode, sends dtmf to disable leds | `false`       |
 
 
 ### Pubsub topics
+
 | Topic                               | Type | Description                                                                           |
 | :---------------------------------- | :--- | :------------------------------------------------------------------------------------ |
 | *evt*                               |      |                                                                                       |
@@ -3298,7 +3330,7 @@ Leitronik nano audio module compatibility
 | `instance_name`.cmd.interphone.*    | int  | revived interphone state and publish MN_EV_INCOMING_CALL or  MN_EV_STOP_CALL          |
 | `instance_name`.cmd.failed_alarm    | str  | Publish `fail` in rtopic                                                              |
 | `instance_name`.cmd.end_of_alarm    | str  | Publish `end` in rtopic                                                               |
-| `instance_name`.cmd.call_status     | int  | Set status_ev `1 MN_EV_START_CALL                                                     | 2 MN_EV_ALARM_VALIDATE | 3 MN_EV_STOP_CALL` |
+| `instance_name`.cmd.call_status     | int  | Set status_ev `1 MN_EV_START_CALL                                                     |
 | `instance_name`.cmd.emerg           | str  | Set rtopic and set ev ->  MN_EV_EMERGENCY_READY                                       |
 | `dtmd_rtopic`                       | str  | Set ev ->  MN_EV_DTMF_CB                                                              |
 | `instance_name`.cmd.autotest        | str  | Set rtopic and set ev ->  MN_EV_TEST                                                  |
